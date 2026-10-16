@@ -92,6 +92,7 @@ public class Teleop extends OpMode {
         Pose robotPose = follower.pose();
         double dt = getDt();
 
+        // TURRET/RANGING BLOCK
 //        // Main Controls
 //        if (gamepad1.xWasPressed()) {
 //            launchOverride = !launchOverride;
