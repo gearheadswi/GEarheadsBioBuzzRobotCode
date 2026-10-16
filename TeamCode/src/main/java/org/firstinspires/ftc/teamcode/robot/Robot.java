@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.hardware.Imu;
 import org.firstinspires.ftc.teamcode.subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
 import static com.pedropathing.ivy.groups.Groups.repeat;
 
@@ -14,21 +15,13 @@ import static com.pedropathing.ivy.groups.Groups.repeat;
  * {@code OpMode.init()} to actually bring up hardware.
  */
 public class Robot {
-
-    /** Alliance color — used to mirror auto paths and field-relative logic. */
-    public enum TeamName { Blue, Red }
-
-    public TeamName teamName;
+    public TeamColor teamName;
     public HardwareMap hardwareMap;
     public Imu imu;
 
-    /**
-     * @param opMode the active OpMode (provides the hardware map)
-     * @param isRed  {@code true} for red alliance, {@code false} for blue
-     */
-    public Robot(OpMode opMode, boolean isRed) {
+    public Robot(OpMode opMode, TeamColor team) {
         hardwareMap = opMode.hardwareMap;
-        teamName = isRed ? TeamName.Red : TeamName.Blue;
+        teamName = team;
     }
 
     /** Instantiates all subsystems. Call once inside {@code OpMode.init()}. */
