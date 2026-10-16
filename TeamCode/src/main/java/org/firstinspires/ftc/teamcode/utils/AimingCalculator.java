@@ -32,11 +32,6 @@ public class AimingCalculator {
      */
     public static final double SHOT_STRENGTH = 2; // TODO TUNE
 
-    public enum TeamColor {
-        RED,
-        BLUE
-    }
-
     public static class TheoreticalLaunchConfiguration {
         private final double turretAngle;
         private final double hoodAngle;
