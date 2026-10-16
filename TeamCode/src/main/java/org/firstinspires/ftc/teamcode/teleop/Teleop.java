@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
@@ -23,11 +24,13 @@ public class Teleop extends OpMode {
 
     private Follower follower;
 
+    private TeamColor team = TeamColor.RED;
+
     @Override
     public void init() {
         Scheduler.reset();
 
-        robot = new Robot(this, false);
+        robot = new Robot(this, team);
         robot.initSubsystems();
 //        robot.intiSequencesTeleop();
 
@@ -35,15 +38,41 @@ public class Teleop extends OpMode {
 
         if (ValueStorage.fromAuto) {
             ValueStorage.fromAuto = false;
+            team = ValueStorage.autoTeam;
+            robot.teamName = team;
             follower.setPose(ValueStorage.auto_pose);
         } else {
-            follower.setPose(DEFAULT_START_POSE_RED); // TODO Alliance
+            setStartPos();
         }
+        printSetTeam();
+    }
+
+    private void setStartPos(){
+        if (team == TeamColor.RED){
+            follower.setPose(DEFAULT_START_POSE_RED);
+        } else {
+            follower.setPose(DEFAULT_START_POSE_BLUE);
+        }
+    }
+
+    private void printSetTeam(){
+        telemetry.addData("Set Team", team);
+        telemetry.update();
     }
 
     @Override
     public void init_loop() {
 //        Scheduler.execute();
+        if (gamepad1.aWasPressed() || gamepad2.aWasPressed()){
+            team = (team == TeamColor.RED) ? TeamColor.BLUE : TeamColor.RED;
+            robot.teamName = team;
+            printSetTeam();
+        }
+        if (gamepad1.yWasPressed() || gamepad2.yWasPressed()){
+            setStartPos();
+            telemetry.addData("Set default position for ", team);
+            telemetry.update();
+        }
     }
 
     @Override
@@ -56,7 +85,7 @@ public class Teleop extends OpMode {
                 -gamepad1.left_stick_y,
                 gamepad1.left_stick_x,
                 gamepad1.right_stick_x,
-                follower.pose().heading() // TODO make work with dif alliances
+                follower.pose().heading() + ((team == TeamColor.BLUE) ? Math.PI : 0)
         );
 
 //        ManualDrive.driveOrHold(follower, powers);
