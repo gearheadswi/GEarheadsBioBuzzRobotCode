@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.testopmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.robot.Robot;
-
 @TeleOp(name = "ServoTest", group = "Tele Op")
-public class servoTester extends LinearOpMode {
+public class ServoTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Servo servo = hardwareMap.get(Servo.class, "test servo");
