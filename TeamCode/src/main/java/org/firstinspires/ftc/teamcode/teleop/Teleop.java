@@ -9,7 +9,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
+import org.firstinspires.ftc.teamcode.utils.AimingCalculator.TheoreticalLaunchConfiguration;
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
@@ -20,11 +23,23 @@ public class Teleop extends OpMode {
     private static final PoseFactory poseFactory = PoseFactory.degrees();
     private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(31, 8, 90);
     private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(110, 113.5, -90);
+    private final TheoreticalLaunchConfiguration defaultLaunchConfig = new TheoreticalLaunchConfiguration(
+            0,
+            45,
+            1
+    );
+
     private Robot robot;
+    private TeamColor team = TeamColor.RED;
+
+    private Turret turret;
 
     private Follower follower;
 
-    private TeamColor team = TeamColor.RED;
+    private double lastUpdate = 0; // Milliseconds
+
+    // When true, sets launch config to default launch config
+    private boolean launchOverride = false;
 
     @Override
     public void init() {
@@ -32,6 +47,9 @@ public class Teleop extends OpMode {
 
         robot = new Robot(this, team);
         robot.initSubsystems();
+
+        turret = robot.turret;
+
 //        robot.intiSequencesTeleop();
 
         follower = Constants.create(hardwareMap);
@@ -45,19 +63,6 @@ public class Teleop extends OpMode {
             setStartPos();
         }
         printSetTeam();
-    }
-
-    private void setStartPos(){
-        if (team == TeamColor.RED){
-            follower.setPose(DEFAULT_START_POSE_RED);
-        } else {
-            follower.setPose(DEFAULT_START_POSE_BLUE);
-        }
-    }
-
-    private void printSetTeam(){
-        telemetry.addData("Set Team", team);
-        telemetry.update();
     }
 
     @Override
@@ -77,10 +82,41 @@ public class Teleop extends OpMode {
 
     @Override
     public void start() {
+        getDt();
     }
 
     @Override
     public void loop() {
+        double robotHeading = follower.pose().heading();
+        double robotHeadingVel = follower.velocity().omega;
+        Pose robotPose = follower.pose();
+        double dt = getDt();
+
+//        // Main Controls
+//        if (gamepad1.xWasPressed()) {
+//            launchOverride = !launchOverride;
+//        }
+//
+//        // Aiming / Ranging Control
+//        TheoreticalLaunchConfiguration launchConfig;
+//        if (launchOverride){
+//            launchConfig = defaultLaunchConfig;
+//        } else {
+//            launchConfig = AimingCalculator.aimAtTarget(
+//                    team,
+//                    robotPose
+//            );
+//        }
+//
+//        turret.setTurretAimOffset(launchConfig.getTurretAngle());
+//
+//        turret.updateMovement(
+//                dt,
+//                Math.toDegrees(robotHeading),
+//                Math.toDegrees(robotHeadingVel)
+//        );
+
+        // Drivetrain
         DrivePowers powers = ManualDrive.fieldCentric(
                 -gamepad1.left_stick_y,
                 gamepad1.left_stick_x,
@@ -94,5 +130,29 @@ public class Teleop extends OpMode {
         // Update stuff
         follower.update();
         Scheduler.execute();
+    }
+
+    /**
+     * Gets dt since last getDt call
+     * @return dt (Seconds)
+     */
+    private double getDt(){
+        double curTime = System.currentTimeMillis();
+        double dt = (curTime - lastUpdate) / 1000;
+        lastUpdate = curTime;
+        return dt;
+    }
+
+    private void setStartPos(){
+        if (team == TeamColor.RED){
+            follower.setPose(DEFAULT_START_POSE_RED);
+        } else {
+            follower.setPose(DEFAULT_START_POSE_BLUE);
+        }
+    }
+
+    private void printSetTeam(){
+        telemetry.addData("Set Team", team);
+        telemetry.update();
     }
 }
