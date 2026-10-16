@@ -39,7 +39,7 @@ public class Teleop extends OpMode {
     private double lastUpdate = 0; // Milliseconds
 
     // When true, sets launch config to default launch config
-    private boolean launchOverride = false;
+    private boolean launchOverride = true;
 
     @Override
     public void init() {
