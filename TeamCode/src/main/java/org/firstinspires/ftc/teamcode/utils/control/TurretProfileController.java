@@ -11,12 +11,13 @@ public class TurretProfileController {
     public static double rightLimitDeg = -118.0; // TODO
     public static double limitSlowZoneDeg = 12.0;
 
-    public double kP = 0.016; // TODO
-    public double kD = 0.001; // TODO
+    // These are static btw now if that ever causes problems
+    public static double kP = 0.016; // TODO
+    public static double kD = 0.001; // TODO
 
-    public double kS = 0.01; // TODO
-    public double kV = 0.0006; // TODO
-    public double kA = 0.0;
+    public static double kS = 0.01; // TODO
+    public static double kV = 0.0006; // TODO
+    public static double kA = 0.0;
 
     public double maxVelDeg = 900.0;
     public double maxAccelDeg = 900.0;

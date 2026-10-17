@@ -83,6 +83,7 @@ public class Turret {
             if (calibrationDuration > CALIBRATION_DELAY && Math.abs(turretVelocity) < CALIBRATION_MIN_VEL){
                 resetRelativeEncoder();
                 encoder_offset = TurretProfileController.rightLimitDeg;
+                setServoPower(0);
                 calibrating = false;
             }
         } else {

@@ -36,7 +36,7 @@ public class Teleop extends OpMode {
 
     private Follower follower;
 
-    private double lastUpdate = 0; // Milliseconds
+    private long lastUpdate = 0; // Milliseconds
 
     // When true, sets launch config to default launch config
     private boolean launchOverride = true;
@@ -138,8 +138,8 @@ public class Teleop extends OpMode {
      * @return dt (Seconds)
      */
     private double getDt(){
-        double curTime = System.currentTimeMillis();
-        double dt = (curTime - lastUpdate) / 1000;
+        long curTime = System.currentTimeMillis();
+        double dt = (curTime - lastUpdate) / 1000.0;
         lastUpdate = curTime;
         return dt;
     }
