@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.pedropathing.ivy.Command;
-import static com.pedropathing.ivy.commands.Commands.*;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,39 +13,53 @@ import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
 import org.firstinspires.ftc.teamcode.utils.control.TurretProfileController;
 
 public class Turret {
+    private static final double ABSOLUTE_ENCODER_OFFSET = 1; // Degrees // TODO tune for absolute encoder
+    private static final double TICKS_PER_DEGREE = 1; // TODO tune for relative encoder
     private static final double CALIBRATING_POWER = 0.1; // TODO tune
     private static final double CALIBRATION_DELAY = 0.5; // Seconds // TODO tune
     private static final double CALIBRATION_MIN_VEL = 1; // Deg per second // TODO tune
-    private static double ABSOLUTE_ENCODER_OFFSET = 1; // Degrees // TODO tune for absolute encoder
 
     private final CRServo powerServo1;
     private final CRServo powerServo2;
 
+    private final DcMotorEx relativeEncoder;
     private final AnalogInput absoluteEncoder;
 
-    private TurretProfileController turretController;
+    TurretProfileController turretController;
+
+    private double encoder_offset; // Degrees
 
     private boolean calibrating = false;
     private double calibrationStart;
 
-    private double prevAbsolutePosition;
-
     public Turret(HardwareMap hardwareMap){
-        powerServo1 = hardwareMap.get(CRServo.class, "turretBase1");
-        powerServo2 = hardwareMap.get(CRServo.class, "turretBase2");
+        powerServo1 = hardwareMap.get(CRServo.class, "turretServo1");
+        powerServo2 = hardwareMap.get(CRServo.class, "turretServo2");
         powerServo1.setDirection(DcMotorSimple.Direction.FORWARD);
         powerServo2.setDirection(DcMotorSimple.Direction.FORWARD); // TODO determine correct directions
 
-        absoluteEncoder = hardwareMap.get(AnalogInput.class, "turretEncoder");
+        relativeEncoder = hardwareMap.get(DcMotorEx.class, "intake");
+        absoluteEncoder = hardwareMap.get(AnalogInput.class, "absoluteEncoder");
 
-        turretController = new TurretProfileController();
+        resetRelativeEncoder();
     }
 
     /**
-     * Gets current absolute encoder position in degrees where 0 degrees is forward and CCW is positive
-     * @return rotation (degrees)
+     * Resets relative encoder based on absolute encoder
      */
-    public double getAbsolutePosition(){ // TODO figure out which direction is positive, correct to be Counter-Clockwise
+    public void resetRelativeEncoder(){
+        encoder_offset = getAbsolutePosition();
+
+        relativeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        relativeEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public double getRelativeEncoderRotation(){ // TODO figure out which direction is positive, correct to be Counter-Clockwise
+        int ticks = relativeEncoder.getCurrentPosition();
+        return (ticks / TICKS_PER_DEGREE) + encoder_offset;
+    }
+
+    public double getAbsolutePosition(){
         return (absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 360) % 360;
     }
 
@@ -63,14 +75,14 @@ public class Turret {
      * @param robotRotationalVelocity (Degrees / Sec) (CCW Positive)
      */
     public void updateMovement(double dt, double robotHeading, double robotRotationalVelocity){
-        double currentRotation = getAbsolutePosition();
-        double turretVelocity = (currentRotation - prevAbsolutePosition) / dt; // TODO Confirm direction
-        prevAbsolutePosition = currentRotation;
+        double currentRotation = getRelativeEncoderRotation();
+        double turretVelocity = relativeEncoder.getVelocity() / TICKS_PER_DEGREE; // TODO Confirm direction
 
         if (calibrating) {
             double calibrationDuration = (System.currentTimeMillis() - calibrationStart) / 1000.0;
             if (calibrationDuration > CALIBRATION_DELAY && Math.abs(turretVelocity) < CALIBRATION_MIN_VEL){
-                ABSOLUTE_ENCODER_OFFSET += TurretProfileController.rightLimitDeg - currentRotation;
+                resetRelativeEncoder();
+                encoder_offset = TurretProfileController.rightLimitDeg;
                 setServoPower(0);
                 calibrating = false;
             }
@@ -80,9 +92,6 @@ public class Turret {
         }
     }
 
-    /**
-     * Starts calibration using endstop. Finishes in updateMovement method once turret stops moving
-     */
     public void startCalibrate() {
         calibrating = true;
         calibrationStart = System.currentTimeMillis();
@@ -93,17 +102,7 @@ public class Turret {
         return calibrating;
     }
 
-    /**
-     * Sets angle turret tries to aim towards with 0 degrees being forward and positive being CCW
-     * @param angleOffset of turret
-     */
     public void setTurretAimOffset(double angleOffset) {
         turretController.setRobotRelativeTargetDeg(angleOffset);
-    }
-
-    // Ivy
-
-    public Command setAngleCommand(double target){
-        return instant(() -> setTurretAimOffset(target));
     }
 }

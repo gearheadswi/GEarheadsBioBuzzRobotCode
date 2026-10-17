@@ -16,6 +16,7 @@ public class TurretEncodersTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             telemetry.addData("Absolute", turret.getAbsolutePosition());
+            telemetry.addData("Relative", turret.getRelativeEncoderRotation());
 
             telemetry.update();
         }
