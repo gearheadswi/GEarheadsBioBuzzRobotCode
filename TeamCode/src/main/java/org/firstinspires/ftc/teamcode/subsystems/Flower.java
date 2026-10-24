@@ -11,8 +11,7 @@ public class Flower {
         UP, DOWN
     }
 
-    private DcMotor leftSlideMotor;
-    private DcMotor rightSlideMotor;
+    private DcMotor slideMotor;
     private FlowerSlidePosition currentSlidePosition;
 
     /**
@@ -22,12 +21,11 @@ public class Flower {
      */
     public Flower(HardwareMap hardwareMap) {
         // Initializing hardware from HardwareMap
-        leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // TODO verify this works
-        leftSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // So that the slides can catch a break when we force stop them
+        slideMotor = hardwareMap.get(DcMotor.class, ""); // TODO Change deviceName
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // So that the slides can catch a break when we force stop them
+        currentSlidePosition = FlowerSlidePosition.DOWN;
     }
 
     /**
@@ -38,9 +36,11 @@ public class Flower {
     public void setSlidePosition(FlowerSlidePosition position) {
         // TODO Type good code here
         if (position == FlowerSlidePosition.DOWN) {
-            // Set position of motor to UP_POSITION
+            // Set position of motor to UP_POSITION - this set is just a test for the tester
+            currentSlidePosition = FlowerSlidePosition.DOWN;
         } else if (position == FlowerSlidePosition.UP) {
             // Set position of motor to UP_POSITION
+            currentSlidePosition = FlowerSlidePosition.UP;
         }
     }
 
@@ -49,7 +49,7 @@ public class Flower {
      *
      * @return the current slide position as a FlowerSlidePosition enum constant
      */
-    public FlowerSlidePosition getExtendedState() {
+    public FlowerSlidePosition getCurrentSlidePosition() {
         return currentSlidePosition;
     }
 
@@ -58,23 +58,19 @@ public class Flower {
      */
     public void manualStop() {
         // TODO check code
-        leftSlideMotor.setPower(0);
-        rightSlideMotor.setPower(0);
+        slideMotor.setPower(0);
         // Once it reaches lower bound,
         currentSlidePosition = FlowerSlidePosition.DOWN;
     }
 
     /**
-     * Resets the motors and their encoders in case of emerg
+     * Resets the motors and their encoders in case of emergency
      */
     public void fullReset() {
         // TODO Write great code
         manualStop();
-        // Reset encoders
-        leftSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Turn the motors back on
-        leftSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }
