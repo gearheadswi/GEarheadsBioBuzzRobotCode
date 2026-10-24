@@ -36,7 +36,7 @@ public class Flower {
      * @param position A FlowerSlidePosition, UP or DOWN, that the user specifies
      */
     public void setSlidePosition(FlowerSlidePosition position) {
-        // TODO Type good code here
+        // TODO Type stellar code here
         if (position == FlowerSlidePosition.DOWN) {
             // Set position of motor to UP_POSITION
         } else if (position == FlowerSlidePosition.UP) {
