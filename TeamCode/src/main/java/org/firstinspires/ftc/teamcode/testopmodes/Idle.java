@@ -77,7 +77,7 @@ public class Idle extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(1); // Idle pipeline
+        limelight.pipelineSwitch(1); // Do nothing pipeline
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.

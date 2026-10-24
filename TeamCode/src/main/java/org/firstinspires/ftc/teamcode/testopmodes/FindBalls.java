@@ -77,7 +77,7 @@ public class FindBalls extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(0); // Test ball detection pipeline
+        limelight.pipelineSwitch(0); // Testing ball detection pipeline
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.

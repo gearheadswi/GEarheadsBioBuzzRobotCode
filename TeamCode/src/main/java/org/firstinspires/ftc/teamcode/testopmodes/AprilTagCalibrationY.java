@@ -77,7 +77,7 @@ public class AprilTagCalibrationY extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(3); // Test ball detection pipeline
+        limelight.pipelineSwitch(3); // AprilTag detection pipeline
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
