@@ -30,7 +30,7 @@ public class AimingCalculator {
      * Ex: If goal is 1 meter away, velocity and angle will target (1, goal height) and (1 * strength, 0)
      * If this ends up not working very well, change to use setpoint
      */
-    public static final double SHOT_STRENGTH = 2; // TODO TUNE
+    public static final double SHOT_STRENGTH = 2; // TODO TUNE?
 
     public static class TheoreticalLaunchConfiguration {
         private final double turretAngle;
@@ -54,36 +54,6 @@ public class AimingCalculator {
         public double getTurretAngle() {
             return turretAngle;
         }
-    }
-
-    /**
-     * Returns ideal aim angle given position
-     * Needs to be converted to servo position to actually use
-     * @param team Red or Blue alliance
-     * @param robotPose Units: (Inches, Radians)
-     * @return Aim angle (Radians)
-     */
-    public static double getHoodAngle(TeamColor team, Pose robotPose){
-        double distance = getTargetDistance(team, robotPose);
-        double angle = Math.atan(
-                (UP_GOAL_HEIGHT - BALL_LEAVE_HEIGHT) * SHOT_STRENGTH
-                        / ( distance * (SHOT_STRENGTH - 1) )
-        );
-        return angle;
-    }
-
-    /**
-     * Returns ideal ball speed upon leaving launcher
-     * Need to actual turn into motor velocity to use
-     * @param team Red or Blue alliance
-     * @param robotPose Units: (Inches, Radians)
-     * @param aimAngle in Radians given by getHoodAngle
-     * @return Speed in In/s
-     */
-    public static double getTargetSpeed(TeamColor team, Pose robotPose, double aimAngle){
-        double distance = getTargetDistance(team, robotPose);
-        double vel = Math.sqrt( SHOT_STRENGTH * GRAVITY * distance / (Math.sin(aimAngle) * Math.cos(aimAngle) * 2) );
-        return vel;
     }
 
     public static Pose getTargetPose(TeamColor team, Pose robotPose){
@@ -116,11 +86,36 @@ public class AimingCalculator {
         return robotPose.heading() - targetAngleFieldSpace;
     }
 
+    /**
+     * Returns ideal aim angle given position
+     * Needs to be converted to servo position to actually use
+     * @param distance distance from target (inches)
+     * @return Aim angle (Radians)
+     */
+    public static double getHoodAngle(double distance){
+        return Math.atan(
+                (UP_GOAL_HEIGHT - BALL_LEAVE_HEIGHT) * SHOT_STRENGTH
+                        / ( distance * (SHOT_STRENGTH - 1) )
+        );
+    }
+
+    /**
+     * Returns ideal ball speed upon leaving launcher
+     * Need to actual turn into motor velocity to use
+     * @param aimAngle in Radians given by getHoodAngle
+     * @param distance distance from target (inches)
+     * @return Speed in In/s
+     */
+    public static double getTargetSpeed(double aimAngle, double distance){
+        return Math.sqrt( SHOT_STRENGTH * GRAVITY * distance / (Math.sin(aimAngle) * Math.cos(aimAngle) * 2) );
+    }
+
     public static TheoreticalLaunchConfiguration aimAtTarget(TeamColor team, Pose robotPose) {
         Pose target = getTargetPose(team, robotPose);
+        double distance = getTargetDistance(team, robotPose);
 
-        double hoodAngle = getHoodAngle(team, robotPose);
-        double velocity = getTargetSpeed(team, robotPose, hoodAngle);
+        double hoodAngle = getHoodAngle(distance);
+        double velocity = getTargetSpeed(hoodAngle, distance);
         double turretOffset = getAimOffsetFromHeading(robotPose, target);
 
         return new TheoreticalLaunchConfiguration(
@@ -145,8 +140,8 @@ public class AimingCalculator {
         double robotTangentialVelocity = robotVelocity.toVector().dot(perpindicularDisplacement) / distance;
 
         // Angle and velocity not compensating
-        double basicHoodAngle = getHoodAngle(team, robotPose);
-        double basicVelocity = getTargetSpeed(team, robotPose, basicHoodAngle);
+        double basicHoodAngle = getHoodAngle(distance);
+        double basicVelocity = getTargetSpeed(basicHoodAngle, distance);
 
         double targetVX = basicVelocity * Math.cos(basicHoodAngle) - robotRadialVelocity;
         double targetVY = robotTangentialVelocity;
@@ -154,6 +149,7 @@ public class AimingCalculator {
 
         double targetVFlat = Math.sqrt( targetVX * targetVX + targetVY * targetVY );
 
+        // Angle and velocity compensating
         double compensatedAngle = Math.atan( targetVZ / targetVFlat );
         double compensatedVel = Math.sqrt(
                 targetVX * targetVX +
