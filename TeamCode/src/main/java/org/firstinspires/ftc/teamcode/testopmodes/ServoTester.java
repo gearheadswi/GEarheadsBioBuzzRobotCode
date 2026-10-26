@@ -12,6 +12,7 @@ public class ServoTester extends LinearOpMode {
         double current_position = 0.5;
         double increment = 0.05;
 
+        waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.left_bumper && current_position >= 0.05) {
                 current_position -= increment;
