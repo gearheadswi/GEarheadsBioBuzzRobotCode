@@ -25,7 +25,7 @@ public class Turret {
     private final DcMotorEx relativeEncoder;
     private final AnalogInput absoluteEncoder;
 
-    TurretProfileController turretController;
+    private TurretProfileController turretController;
 
     private double encoder_offset; // Degrees
 
@@ -54,12 +54,20 @@ public class Turret {
         relativeEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    /**
+     * Gets current relative encoder position in degrees where 0 degrees is forward and CCW is positive
+     * @return rotation (degrees)
+     */
     public double getRelativeEncoderRotation(){ // TODO figure out which direction is positive, correct to be Counter-Clockwise
         int ticks = relativeEncoder.getCurrentPosition();
         return (ticks / TICKS_PER_DEGREE) + encoder_offset;
     }
 
-    public double getAbsolutePosition(){
+    /**
+     * Gets current absolute encoder position in degrees where 0 degrees is forward and CCW is positive
+     * @return rotation (degrees)
+     */
+    public double getAbsolutePosition(){ // TODO figure out which direction is positive, correct to be Counter-Clockwise
         return (absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 360) % 360;
     }
 
@@ -92,6 +100,9 @@ public class Turret {
         }
     }
 
+    /**
+     * Starts calibration using endstop. Finishes in updateMovement method once turret stops moving
+     */
     public void startCalibrate() {
         calibrating = true;
         calibrationStart = System.currentTimeMillis();
@@ -102,6 +113,10 @@ public class Turret {
         return calibrating;
     }
 
+    /**
+     * Sets angle turret tries to aim towards with 0 degrees being forward and positive being CCW
+     * @param angleOffset of turret
+     */
     public void setTurretAimOffset(double angleOffset) {
         turretController.setRobotRelativeTargetDeg(angleOffset);
     }
