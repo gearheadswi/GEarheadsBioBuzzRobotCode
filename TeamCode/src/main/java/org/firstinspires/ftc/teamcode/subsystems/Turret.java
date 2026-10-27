@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.pedropathing.ivy.Command;
+import static com.pedropathing.ivy.commands.Commands.*;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -119,5 +121,11 @@ public class Turret {
      */
     public void setTurretAimOffset(double angleOffset) {
         turretController.setRobotRelativeTargetDeg(angleOffset);
+    }
+
+    // Ivy
+
+    public Command setAngleCommand(double target){
+        return instant(() -> setTurretAimOffset(target));
     }
 }
