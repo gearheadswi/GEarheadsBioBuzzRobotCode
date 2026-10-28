@@ -7,48 +7,46 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
-import org.firstinspires.ftc.ftccommon.internal.manualcontrol.parameters.SetServoEnableParameters;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class IntakeTransfer {
     private static final double BLOCKER_CLOSED_POSITION = 1; // TODO Tune
     private static final double BLOCKER_OPEN_POSITION = 0; // TODO Tune
-
     private static final double FLOWER_RAMP_DOWN_LEFT = 0; // TODO Tune
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0; // TODO Tune
     private static final double FLOWER_RAMP_UP_LEFT = 1; // TODO Tune
     private static final double FLOWER_RAMP_UP_RIGHT = 1; //TODO Tune
     private static final double EMPTY_STORAGE = 25.0;
     private static final double BALL_DETECTED_STORAGE = 20.0;
-
     private DcMotor intakeMotor;
     private DcMotor transferMotor;
-
     private Servo blockerServo;
     private RevBlinkinLedDriver light;
     private Servo flowerServoLeft;
     private Servo flowerServoRight;
-
     private DistanceSensor distanceSensor;
-
-    private int ballCount;
-
-     private boolean isObjectPresent = false;
+    private int ballCount = 0;
+    private boolean isObjectPresent = false;
 
     /**
      * Initialize hardware for intake/transfer.
      * @param hardwareMap hardware map from opmode
      */
     public IntakeTransfer(HardwareMap hardwareMap){
+
         distanceSensor = hardwareMap.get(DistanceSensor.class,"");//TODO
-        intakeMotor = hardwareMap.get(DcMotor.class, "");//TODO
-        transferMotor = hardwareMap.get(DcMotor.class, "");//TODO
+
+        intakeMotor = hardwareMap.get(DcMotor.class, "intake");//TODO
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD); //TODO
+
+        transferMotor = hardwareMap.get(DcMotor.class, "transfer");//TODO
         transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);//TODO
-        blockerServo = hardwareMap.get(Servo.class, ""); //TODO
-        light = hardwareMap.get(RevBlinkinLedDriver.class, ""); //TODO
-        light.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-        ballCount = 0;
+
+        blockerServo = hardwareMap.get(Servo.class, "blockerServo"); //TODO
+
+        flowerServoLeft = hardwareMap.get(Servo.class, "leftRamp");
+        flowerServoRight = hardwareMap.get(Servo.class, "rightRamp");
+
         isObjectPresent = (distanceSensor.getDistance(DistanceUnit.CM) < BALL_DETECTED_STORAGE);
         // Initializing hardware from hardware map TODO
     }
@@ -100,23 +98,13 @@ public class IntakeTransfer {
         }
     }
 
-
     /**
      * Returns current ball count from inside of robot
+     *
      * @return ball count
      */
-    public void ballCount() {
-        if (ballCount == 4) {
-            //Connect to light on robot and set it turned on (Red)
-        } else if (ballCount == 3) {
-            //light color to orange
-        } else if (ballCount == 2) {
-            //light color to yellow
-        } else if (ballCount == 1) {
-            //light color to green
-        } else if (ballCount == 0) {
-            //light color neutral or white
-        }//TODO
+    public int returnBallCount() {
+        return ballCount;
     }
 
     /**
