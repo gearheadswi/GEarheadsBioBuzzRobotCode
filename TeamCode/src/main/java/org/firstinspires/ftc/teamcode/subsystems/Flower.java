@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Flower {
-    private static final double DOWN_POSITION = 0.0; // TODO Check type and tune
-    private static final double UP_POSITION = 0.0; // TODO Check type and tune
+    private static final int DOWN_POSITION = 0; // Int representing number of ticks for the slideMotor encoder
+    private static final int UP_POSITION = 0; // Int representing number of ticks for the slideMotor encoder
 
     public enum FlowerSlidePosition {
         UP, DOWN
