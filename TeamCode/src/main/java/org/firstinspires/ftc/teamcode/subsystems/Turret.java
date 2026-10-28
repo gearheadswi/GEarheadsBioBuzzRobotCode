@@ -39,6 +39,8 @@ public class Turret {
         powerServo2.setDirection(DcMotorSimple.Direction.FORWARD); // TODO determine correct directions
 
         absoluteEncoder = hardwareMap.get(AnalogInput.class, "turretEncoder");
+
+        turretController = new TurretProfileController();
     }
 
     /**
