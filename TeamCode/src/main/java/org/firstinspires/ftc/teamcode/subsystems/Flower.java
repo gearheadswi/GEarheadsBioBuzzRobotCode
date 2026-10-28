@@ -39,6 +39,7 @@ public class Flower {
         if (position == FlowerSlidePosition.DOWN) {
             // Set position of motor to DOWN_POSITION - this set is just a test for the tester
             slideMotor.setTargetPosition(DOWN_POSITION);
+            slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             currentSlidePosition = FlowerSlidePosition.DOWN;
         } else if (position == FlowerSlidePosition.UP) {
             // Set position of motor to UP_POSITION
