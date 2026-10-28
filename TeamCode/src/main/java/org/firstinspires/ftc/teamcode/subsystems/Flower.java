@@ -24,7 +24,7 @@ public class Flower {
         slideMotor = hardwareMap.get(DcMotor.class, ""); // TODO Change deviceName
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // So that the slides can catch a break when we force stop them
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // Slides will enter down position when not being held up
         currentSlidePosition = FlowerSlidePosition.DOWN;
     }
 
