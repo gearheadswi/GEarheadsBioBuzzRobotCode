@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
 import org.firstinspires.ftc.teamcode.utils.control.TurretProfileController;
 
 public class Turret {
-    private static final double TICKS_PER_DEGREE = 1; // TODO tune for relative encoder
     private static final double CALIBRATING_POWER = 0.1; // TODO tune
     private static final double CALIBRATION_DELAY = 0.5; // Seconds // TODO tune
     private static final double CALIBRATION_MIN_VEL = 1; // Deg per second // TODO tune
@@ -24,12 +23,9 @@ public class Turret {
     private final CRServo powerServo1;
     private final CRServo powerServo2;
 
-    private final DcMotorEx relativeEncoder;
     private final AnalogInput absoluteEncoder;
 
     private TurretProfileController turretController;
-
-    private double encoder_offset; // Degrees
 
     private boolean calibrating = false;
     private double calibrationStart;
@@ -42,30 +38,7 @@ public class Turret {
         powerServo1.setDirection(DcMotorSimple.Direction.FORWARD);
         powerServo2.setDirection(DcMotorSimple.Direction.FORWARD); // TODO determine correct directions
 
-//        relativeEncoder = hardwareMap.get(DcMotorEx.class, "intake");
-        relativeEncoder = null;
         absoluteEncoder = hardwareMap.get(AnalogInput.class, "turretEncoder");
-
-//        resetRelativeEncoder();
-    }
-
-    /**
-     * Resets relative encoder based on absolute encoder
-     */
-    public void resetRelativeEncoder(){
-        encoder_offset = getAbsolutePosition();
-
-        relativeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        relativeEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    /**
-     * Gets current relative encoder position in degrees where 0 degrees is forward and CCW is positive
-     * @return rotation (degrees)
-     */
-    public double getRelativeEncoderRotation(){ // TODO figure out which direction is positive, correct to be Counter-Clockwise
-        int ticks = relativeEncoder.getCurrentPosition();
-        return (ticks / TICKS_PER_DEGREE) + encoder_offset;
     }
 
     /**
@@ -88,11 +61,6 @@ public class Turret {
      * @param robotRotationalVelocity (Degrees / Sec) (CCW Positive)
      */
     public void updateMovement(double dt, double robotHeading, double robotRotationalVelocity){
-        // Relative encoder
-//        double currentRotation = getRelativeEncoderRotation();
-//        double turretVelocity = relativeEncoder.getVelocity() / TICKS_PER_DEGREE; // TODO Confirm direction
-
-        // Absolute Encoder
         double currentRotation = getAbsolutePosition();
         double turretVelocity = (currentRotation - prevAbsolutePosition) / dt; // TODO Confirm direction
         prevAbsolutePosition = currentRotation;
@@ -100,8 +68,6 @@ public class Turret {
         if (calibrating) {
             double calibrationDuration = (System.currentTimeMillis() - calibrationStart) / 1000.0;
             if (calibrationDuration > CALIBRATION_DELAY && Math.abs(turretVelocity) < CALIBRATION_MIN_VEL){
-//                resetRelativeEncoder();
-                encoder_offset = TurretProfileController.rightLimitDeg;
                 ABSOLUTE_ENCODER_OFFSET += TurretProfileController.rightLimitDeg - currentRotation;
                 setServoPower(0);
                 calibrating = false;
