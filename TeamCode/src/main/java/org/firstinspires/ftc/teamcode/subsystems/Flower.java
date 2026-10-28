@@ -59,7 +59,7 @@ public class Flower {
     public void manualStop() {
         // TODO check code
         slideMotor.setPower(0);
-        // Once it reaches lower bound,
+        // Once the slides reach the lower position, the position is set to down
         currentSlidePosition = FlowerSlidePosition.DOWN;
     }
 
