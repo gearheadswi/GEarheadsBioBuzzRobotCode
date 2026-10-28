@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import org.firstinspires.ftc.ftccommon.internal.manualcontrol.parameters.SetServoEnableParameters;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -17,12 +18,14 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0; // TODO Tune
     private static final double FLOWER_RAMP_UP_LEFT = 1; // TODO Tune
     private static final double FLOWER_RAMP_UP_RIGHT = 1; //TODO Tune
+    private static final double EMPTY_STORAGE = 25.0;
+    private static final double BALL_DETECTED_STORAGE = 20.0;
 
     private DcMotor intakeMotor;
     private DcMotor transferMotor;
 
     private Servo blockerServo;
-
+    private RevBlinkinLedDriver light;
     private Servo flowerServoLeft;
     private Servo flowerServoRight;
 
@@ -30,7 +33,7 @@ public class IntakeTransfer {
 
     private int ballCount;
 
-    private double previousDistance;
+     private boolean isObjectPresent = false;
 
     /**
      * Initialize hardware for intake/transfer.
@@ -43,8 +46,10 @@ public class IntakeTransfer {
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD); //TODO
         transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);//TODO
         blockerServo = hardwareMap.get(Servo.class, ""); //TODO
-        previousDistance = distanceSensor.getDistance(DistanceUnit.CM);
+        light = hardwareMap.get(RevBlinkinLedDriver.class, ""); //TODO
+        light.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
         ballCount = 0;
+        isObjectPresent = (distanceSensor.getDistance(DistanceUnit.CM) < BALL_DETECTED_STORAGE);
         // Initializing hardware from hardware map TODO
     }
 
@@ -75,20 +80,25 @@ public class IntakeTransfer {
      * 4)Then adds +1 object.
      */
     public void updateBallCount(){
-        if (intakeMotor.getPower() == -1) {
-            return;
-        }
         double currentDistance = distanceSensor.getDistance(DistanceUnit.CM);
-        double emptyStorage = 25.0;
-        double ballDetectedStorage = 20.0;
-        if (previousDistance >= emptyStorage && currentDistance < ballDetectedStorage){
-            if (ballCount < 4) {
-                ballCount++;
+
+        if (!isObjectPresent && currentDistance < BALL_DETECTED_STORAGE) {
+            if (intakeMotor.getPower() > 0) {
+                if (ballCount < 4) {
+                    ballCount++;
+                }
+                isObjectPresent = true;
+            } else if (intakeMotor.getPower() < 0) {
+                if (ballCount > 0) {
+                    ballCount--;
+                }
+                isObjectPresent = true;
             }
         }
-        previousDistance = currentDistance;
+        if (isObjectPresent && currentDistance >= EMPTY_STORAGE) {
+            isObjectPresent= false;
+        }
     }
-
 
 
     /**
@@ -106,7 +116,7 @@ public class IntakeTransfer {
             //light color to green
         } else if (ballCount == 0) {
             //light color neutral or white
-        }
+        }//TODO
     }
 
     /**
