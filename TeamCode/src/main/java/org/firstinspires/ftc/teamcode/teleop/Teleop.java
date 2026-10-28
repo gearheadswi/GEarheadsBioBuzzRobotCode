@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.Brakes;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
 import com.pedropathing.drivetrain.DrivePowers;
@@ -20,7 +21,10 @@ public class Teleop extends OpMode {
     private static final PoseFactory poseFactory = PoseFactory.degrees();
     private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(31, 8, 90);
     private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(110, 113.5, -90);
+    private static final double MAX_BRAKE_SPEED = 1;
     private Robot robot;
+
+    private Brakes brakes;
 
     private Follower follower;
 
@@ -33,6 +37,8 @@ public class Teleop extends OpMode {
         robot = new Robot(this, team);
         robot.initSubsystems();
 //        robot.intiSequencesTeleop();
+
+        brakes = robot.brakes;
 
         follower = Constants.create(hardwareMap);
 
@@ -87,6 +93,16 @@ public class Teleop extends OpMode {
                 gamepad1.right_stick_x,
                 follower.pose().heading() + ((team == TeamColor.BLUE) ? Math.PI : 0)
         );
+
+//        if (
+//                Math.abs(gamepad1.left_stick_x) < 0.05 &&
+//                Math.abs(gamepad1.left_stick_y) < 0.05 &&
+//                Math.abs(gamepad1.right_stick_x) < 0.05
+//            ){
+//            brakes.brake();
+//        } else {
+//            brakes.release();
+//        }
 
 //        ManualDrive.driveOrHold(follower, powers);
         follower.manual(powers);

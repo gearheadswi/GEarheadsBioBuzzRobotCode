@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.hardware.Imu;
+import org.firstinspires.ftc.teamcode.subsystems.Brakes;
 import org.firstinspires.ftc.teamcode.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
@@ -19,6 +20,8 @@ public class Robot {
     public HardwareMap hardwareMap;
     public Imu imu;
 
+    public Brakes brakes;
+
     public Robot(OpMode opMode, TeamColor team) {
         hardwareMap = opMode.hardwareMap;
         teamName = team;
@@ -27,11 +30,13 @@ public class Robot {
     /** Instantiates all subsystems. Call once inside {@code OpMode.init()}. */
     public void initSubsystems() {
         imu = new Imu(hardwareMap);
+        brakes = new Brakes(hardwareMap);
     }
 
     public void intiSequencesTeleop(){
     }
 
     public void intiSequencesAuto(){
+        brakes.release();
     }
 }
