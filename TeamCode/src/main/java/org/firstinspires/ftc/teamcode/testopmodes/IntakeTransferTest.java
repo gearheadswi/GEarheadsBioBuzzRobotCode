@@ -33,10 +33,9 @@ public class IntakeTransferTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             intakeTransfer.updateBallCount();
-            intakeTransfer.returnBallCount();
             telemetry.addData("Ball Count:", intakeTransfer.returnBallCount());
             telemetry.update();
-            intakeTransfer.ballCount();
+
 
 
 

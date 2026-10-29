@@ -15,13 +15,12 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_DOWN_LEFT = 0.95; // TODO Tune
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0; // TODO Tune
     private static final double FLOWER_RAMP_UP_LEFT = 0.025; // TODO Tune
-    private static final double FLOWER_RAMP_UP_RIGHT = 0.925; //TODO Tune
+    private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
     private static final double EMPTY_STORAGE = 25.0;
     private static final double BALL_DETECTED_STORAGE = 20.0;
     private DcMotor intakeMotor;
     private DcMotor transferMotor;
     private Servo blockerServo;
-    private RevBlinkinLedDriver light;
     private Servo flowerServoLeft;
     private Servo flowerServoRight;
     private DistanceSensor distanceSensor;
@@ -34,21 +33,21 @@ public class IntakeTransfer {
      */
     public IntakeTransfer(HardwareMap hardwareMap){
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class,"");//TODO
+        distanceSensor = hardwareMap.get(DistanceSensor.class,"breakbeam");
 
-        intakeMotor = hardwareMap.get(DcMotor.class, "intake");//TODO
-        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD); //TODO
+        intakeMotor = hardwareMap.get(DcMotor.class, "intake");
+        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        transferMotor = hardwareMap.get(DcMotor.class, "transfer");//TODO
-        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);//TODO
+        transferMotor = hardwareMap.get(DcMotor.class, "transfer");
+        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        blockerServo = hardwareMap.get(Servo.class, "blockerServo"); //TODO
+        blockerServo = hardwareMap.get(Servo.class, "blockerServo");
 
         flowerServoLeft = hardwareMap.get(Servo.class, "leftRamp");
         flowerServoRight = hardwareMap.get(Servo.class, "rightRamp");
 
         isObjectPresent = (distanceSensor.getDistance(DistanceUnit.CM) < BALL_DETECTED_STORAGE);
-        // Initializing hardware from hardware map TODO
+        // Initializing hardware from hardware map
     }
 
     /**
@@ -57,7 +56,6 @@ public class IntakeTransfer {
     public void activateIntake(){
         intakeMotor.setPower(1);
         transferMotor.setPower(1);
-        // TODO
     }
 
     /**
@@ -66,7 +64,6 @@ public class IntakeTransfer {
     public void reverseIntake(){
         intakeMotor.setPower(-1);
         transferMotor.setPower(-1);
-        // TODO
     }
 
     /**
@@ -113,7 +110,7 @@ public class IntakeTransfer {
      */
     public void startBallRelease(){
         blockerServo.setPosition(BLOCKER_OPEN_POSITION);//TODO
-
+        ballCount = 0;
     }
 
     /**
@@ -128,15 +125,15 @@ public class IntakeTransfer {
      * Sets arm servos to up
      */
     public void flowerIntakeArmUp(){
-        flowerServoLeft.setPosition(FLOWER_RAMP_UP_LEFT);//TODO
-        flowerServoRight.setPosition(FLOWER_RAMP_UP_RIGHT);//TODO
+        flowerServoLeft.setPosition(FLOWER_RAMP_UP_LEFT);
+        flowerServoRight.setPosition(FLOWER_RAMP_UP_RIGHT);
     }
 
     /**
      * Sets arm servos down
      */
     public void flowerIntakeArmDown(){
-        flowerServoLeft.setPosition(FLOWER_RAMP_DOWN_LEFT);//TODO
-        flowerServoRight.setPosition(FLOWER_RAMP_DOWN_RIGHT);// TODO
+        flowerServoLeft.setPosition(FLOWER_RAMP_DOWN_LEFT);
+        flowerServoRight.setPosition(FLOWER_RAMP_DOWN_RIGHT);
     }
 }
