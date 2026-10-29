@@ -96,13 +96,13 @@ public class IntakeTransfer {
         double currentDistance = distanceSensor.getDistance(DistanceUnit.CM);
 
         if (!isObjectPresent && currentDistance < BALL_DETECTED_STORAGE) {
-            if (intakeMotor.getPower() > 0) {
+            if (targetCurrent > 0) {
                 if (ballCount < 4) {
                     ballCount++;
                 }
                 isObjectPresent = true;
             } else if (intakeMotor.getPower() < 0) {
-                if (ballCount > 0) {
+                if (targetCurrent > 0) {
                     ballCount--;
                 }
                 isObjectPresent = true;
