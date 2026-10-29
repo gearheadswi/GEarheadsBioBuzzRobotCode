@@ -1,18 +1,22 @@
 package org.firstinspires.ftc.teamcode.testopmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.hardware.EncoderBasedCurrentLimitingMotor;
 
+@TeleOp
 public class CurrentLimiterTestEncoder extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         VoltageSensor voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
         DcMotorEx actualMotor = hardwareMap.get(DcMotorEx.class, "transfer");
+        actualMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         EncoderBasedCurrentLimitingMotor motor = new EncoderBasedCurrentLimitingMotor(
                 actualMotor,
                 voltageSensor
@@ -33,13 +37,13 @@ public class CurrentLimiterTestEncoder extends LinearOpMode {
                 current = 4.6;
             }
             if (gamepad1.bWasPressed()){
-                current = 0.5;
+                current = 6;
             }
             if (gamepad1.yWasPressed()){
-                current = 1.5;
+                current = 3;
             }
             if (gamepad1.xWasPressed()){
-                current = -1.5;
+                current = -3;
             }
 
             motor.controlCurrent(current);
