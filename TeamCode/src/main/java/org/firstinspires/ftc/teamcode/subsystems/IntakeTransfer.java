@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.hardware.EncoderBasedCurrentLimitingMotor;
 
 public class IntakeTransfer {
     private static final double BLOCKER_CLOSED_POSITION = 1; // TODO Tune
@@ -18,14 +21,19 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
     private static final double EMPTY_STORAGE = 25.0;
     private static final double BALL_DETECTED_STORAGE = 20.0;
-    private DcMotor intakeMotor;
-    private DcMotor transferMotor;
+    private static final double MAX_CURRENT = 6;
+    private DcMotorEx intakeMotor;
+    private DcMotorEx transferMotor;
     private Servo blockerServo;
     private Servo flowerServoLeft;
     private Servo flowerServoRight;
     private DistanceSensor distanceSensor;
     private int ballCount = 0;
     private boolean isObjectPresent = false;
+
+    private EncoderBasedCurrentLimitingMotor intakeCurrentLimiter;
+    private EncoderBasedCurrentLimitingMotor transferCurrentLimiter;
+    private double targetCurrent = 0;
 
     /**
      * Initialize hardware for intake/transfer.
@@ -35,10 +43,10 @@ public class IntakeTransfer {
 
         distanceSensor = hardwareMap.get(DistanceSensor.class,"breakbeam");
 
-        intakeMotor = hardwareMap.get(DcMotor.class, "intake");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        transferMotor = hardwareMap.get(DcMotor.class, "transfer");
+        transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
         transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         blockerServo = hardwareMap.get(Servo.class, "blockerServo");
@@ -48,22 +56,32 @@ public class IntakeTransfer {
 
         isObjectPresent = (distanceSensor.getDistance(DistanceUnit.CM) < BALL_DETECTED_STORAGE);
         // Initializing hardware from hardware map
+
+        VoltageSensor voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
+        intakeCurrentLimiter = new EncoderBasedCurrentLimitingMotor(intakeMotor, voltageSensor);
+        transferCurrentLimiter = new EncoderBasedCurrentLimitingMotor(transferMotor, voltageSensor);
     }
 
     /**
      * Spins motors forward on intake and transfer
      */
     public void activateIntake(){
-        intakeMotor.setPower(1);
-        transferMotor.setPower(1);
+        targetCurrent = MAX_CURRENT;
     }
 
     /**
      * Spins motors reverse on intake and transfer
      */
     public void reverseIntake(){
-        intakeMotor.setPower(-1);
-        transferMotor.setPower(-1);
+        targetCurrent = -MAX_CURRENT;
+    }
+
+    /**
+     * Updates the motor to achieve target current.
+     */
+    public void updateCurrentLimiting(){
+        intakeCurrentLimiter.controlCurrent(targetCurrent);
+        transferCurrentLimiter.controlCurrent(targetCurrent);
     }
 
     /**
