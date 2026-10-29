@@ -12,10 +12,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class IntakeTransfer {
     private static final double BLOCKER_CLOSED_POSITION = 1; // TODO Tune
     private static final double BLOCKER_OPEN_POSITION = 0; // TODO Tune
-    private static final double FLOWER_RAMP_DOWN_LEFT = 0; // TODO Tune
+    private static final double FLOWER_RAMP_DOWN_LEFT = 0.95; // TODO Tune
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0; // TODO Tune
-    private static final double FLOWER_RAMP_UP_LEFT = 1; // TODO Tune
-    private static final double FLOWER_RAMP_UP_RIGHT = 1; //TODO Tune
+    private static final double FLOWER_RAMP_UP_LEFT = 0.025; // TODO Tune
+    private static final double FLOWER_RAMP_UP_RIGHT = 0.925; //TODO Tune
     private static final double EMPTY_STORAGE = 25.0;
     private static final double BALL_DETECTED_STORAGE = 20.0;
     private DcMotor intakeMotor;
@@ -40,7 +40,7 @@ public class IntakeTransfer {
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD); //TODO
 
         transferMotor = hardwareMap.get(DcMotor.class, "transfer");//TODO
-        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);//TODO
+        transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);//TODO
 
         blockerServo = hardwareMap.get(Servo.class, "blockerServo"); //TODO
 
