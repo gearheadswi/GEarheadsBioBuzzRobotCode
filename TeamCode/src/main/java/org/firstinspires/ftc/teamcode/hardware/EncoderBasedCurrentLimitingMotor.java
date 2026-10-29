@@ -11,7 +11,7 @@ public class EncoderBasedCurrentLimitingMotor {
     public static final double MOTOR_RESISTANCE = 12 / 9.2;
     // 12V - no load current * resistance / (5800rpm -> radians/sec)
     public static final double VOLTAGE_PER_RADIANS_PER_SECOND =
-            12 - 0.25 * MOTOR_RESISTANCE
+            (12 - 0.25 * MOTOR_RESISTANCE)
                     / (5800 * 2 * Math.PI / 60);
     public static final double TICKS_PER_REV = 28;
     public static final double MAX_VOLTAGE = 13;
@@ -32,7 +32,7 @@ public class EncoderBasedCurrentLimitingMotor {
      * Sets target current of motor. Note stall current is 9.2A, so peak power is at 4.6A.
      * @param targetCurrent in Amps (sign determines direction)
      */
-    public void setCurrent(double targetCurrent){
+    public void controlCurrent(double targetCurrent){
         double backEmfVoltage = getBackEmf();
 
         double requiredVoltage = targetCurrent * MOTOR_RESISTANCE + backEmfVoltage;
@@ -40,6 +40,13 @@ public class EncoderBasedCurrentLimitingMotor {
         double batteryVoltage = voltageSensor.getVoltage();
         double targetVoltage = Math.min( MAX_VOLTAGE, Math.max( -MAX_VOLTAGE, requiredVoltage ));
         motor.setPower(targetVoltage / batteryVoltage);
+    }
+
+    /**
+     * Turns motor off, stops rotating
+     */
+    public void off(){
+        motor.setPower(0);
     }
 
     /**
