@@ -36,6 +36,7 @@ public class Flower {
      */
     public void setSlidePosition(FlowerSlidePosition position) {
         // TODO Type stellar code here
+        // TODO check logic
         if (position == FlowerSlidePosition.DOWN) {
             // Set position of motor to DOWN_POSITION
             slideMotor.setTargetPosition(DOWN_POSITION);
@@ -75,6 +76,7 @@ public class Flower {
     public void fullReset() {
         // TODO Write great code
         manualStop();
+        // TODO make update logic
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Turn the motors back on
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
