@@ -16,7 +16,7 @@ public class Flower {
         UP, DOWN
     }
 
-    public final DcMotor slideMotor;
+    private final DcMotor slideMotor;
     private FlowerSlidePosition currentSlidePosition;
 
     /**
