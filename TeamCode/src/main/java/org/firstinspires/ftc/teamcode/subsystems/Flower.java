@@ -63,7 +63,7 @@ public class Flower {
     public FlowerSlidePosition getCurrentSlidePosition() {
         return currentSlidePosition;
     }
-    public getCurrentSlidePositionTicks() {
+    public int getCurrentSlidePositionTicks() {
         return slideMotor.getCurrentPosition();
     }
     public void FLowerSlideTestSetup() {
