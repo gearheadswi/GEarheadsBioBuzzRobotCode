@@ -17,6 +17,8 @@ public class FlowerTester extends LinearOpMode {
             if (gamepad1.rightBumperWasPressed()) {
                 flower.setSlidePosition(Flower.FlowerSlidePosition.DOWN);
             }
+            double JOYSTICK_POWER = -gamepad1.right_stick_y * flower.TEST_POWER;
+            flower.slideMotor.setPower(JOYSTICK_POWER);
             telemetry.addData("Current Slide Position (UP/DOWN): ", flower.getCurrentSlidePosition());
             telemetry.update();
         }
