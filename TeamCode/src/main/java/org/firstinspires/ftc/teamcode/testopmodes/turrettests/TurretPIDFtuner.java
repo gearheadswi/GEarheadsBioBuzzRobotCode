@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.control.TurretProfileController;
 
-@TeleOp(name = "Turret PIDF tuner")
+@TeleOp(name = "Turret PIDF tuner", group = "turret")
 public class TurretPIDFtuner extends LinearOpMode {
 
     double[] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
