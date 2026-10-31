@@ -63,6 +63,10 @@ public class Flower {
     public FlowerSlidePosition getCurrentSlidePosition() {
         return currentSlidePosition;
     }
+
+    /**
+     * @return the current slide motor postion in ticks
+     */
     public int getCurrentSlidePositionTicks() {
         return slideMotor.getCurrentPosition();
     }
