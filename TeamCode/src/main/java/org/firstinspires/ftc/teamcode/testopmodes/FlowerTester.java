@@ -20,6 +20,9 @@ public class FlowerTester extends LinearOpMode {
             double JOYSTICK_POWER = -gamepad1.right_stick_y * flower.TEST_POWER;
             flower.slideMotor.setPower(JOYSTICK_POWER);
             telemetry.addData("Current Slide Position (UP/DOWN): ", flower.getCurrentSlidePosition());
+            telemetry.addData("Ticks", flower.slideMotor.getCurrentSlidePositionTicks());
+            telemetry.addData("Position (in)", "%.2f", flower.slideMotor.getCurrentSlidePositionTicks() / flower.TICKS_PER_INCH);
+            telemetry.addData("Power", "%.2f", JOYSTICK_POWER);
             telemetry.update();
         }
     }
