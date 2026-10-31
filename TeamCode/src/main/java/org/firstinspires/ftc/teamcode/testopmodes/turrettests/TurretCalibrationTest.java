@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
-@TeleOp(name = "TurretEncodersTest")
+@TeleOp(name = "Turret Calibration Test")
 public class TurretCalibrationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -13,14 +13,20 @@ public class TurretCalibrationTest extends LinearOpMode {
 
         waitForStart();
 
+        long lastUpdate = 0;
+
         while (opModeIsActive()) {
+            long curTime = System.currentTimeMillis();
+            double dt = (curTime - lastUpdate) / 1000.0;
+            lastUpdate = curTime;
+
             if (gamepad1.aWasPressed()){
                 turret.startCalibrate();
             }
 
             if (turret.isCalibrating()){
                 turret.updateMovement(
-                    0,
+                    dt,
                         0,
                         0
                 );
@@ -28,7 +34,6 @@ public class TurretCalibrationTest extends LinearOpMode {
 
             telemetry.addData("Calibrating", turret.isCalibrating());
             telemetry.addData("Absolute", turret.getAbsolutePosition());
-            telemetry.addData("Relative", turret.getRelativeEncoderRotation());
             telemetry.update();
         }
     }

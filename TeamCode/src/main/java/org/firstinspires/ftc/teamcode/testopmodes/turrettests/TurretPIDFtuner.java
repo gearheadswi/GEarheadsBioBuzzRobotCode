@@ -30,13 +30,13 @@ public class TurretPIDFtuner extends LinearOpMode {
                 turret.startCalibrate();
             }
             if (gamepad1.yWasPressed()){
-                turret.setTurretAimOffset(0);
+                targetDeg = 340;
             }
             if (gamepad1.xWasPressed()){
-                turret.setTurretAimOffset(-90);
+                targetDeg = 290;
             }
             if (gamepad1.bWasPressed()){
-                turret.setTurretAimOffset(90);
+                targetDeg = 220;
             }
 
             if(gamepad2.bWasPressed()){
@@ -67,7 +67,7 @@ public class TurretPIDFtuner extends LinearOpMode {
                 TurretProfileController.kV -= stepSizes[stepIndex];
             }
 
-
+            turret.setTurretAimOffset(targetDeg);
 
             turret.updateMovement(
                 dt,
@@ -80,9 +80,8 @@ public class TurretPIDFtuner extends LinearOpMode {
             telemetry.addData("kS (A B)", TurretProfileController.kS);
             telemetry.addData("kV (X Y)", TurretProfileController.kV);
             telemetry.addData("Target Angle", targetDeg);
-            telemetry.addData("Error", targetDeg - turret.getRelativeEncoderRotation());
+            telemetry.addData("Error", targetDeg - turret.getAbsolutePosition());
             telemetry.addLine();
-            telemetry.addData("Relative", turret.getRelativeEncoderRotation());
             telemetry.addData("Absolute", turret.getAbsolutePosition());
             telemetry.addData("Calibrating", turret.isCalibrating());
             telemetry.addLine();

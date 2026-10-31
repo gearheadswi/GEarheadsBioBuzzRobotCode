@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
-@TeleOp(name = "TurretEncodersTest")
+@TeleOp(name = "Turret Encoders Test")
 public class TurretEncodersTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
