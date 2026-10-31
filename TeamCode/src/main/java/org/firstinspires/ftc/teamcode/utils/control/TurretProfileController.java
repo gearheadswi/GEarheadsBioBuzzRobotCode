@@ -13,7 +13,7 @@ public class TurretProfileController {
 
     // These are static btw now if that ever causes problems
     public static double kP = 0.016; // TODO
-    public static double kD = 0.001; // TODO
+    public static double kD = 0.0007; // TODO
 
     public static double kS = 0.01; // TODO
     public static double kV = 0.0006; // TODO
