@@ -32,7 +32,7 @@ public class Flower {
     /**
      * Moves the slide according to which position the user wants to move it to, either UP or DOWN.
      *
-     * @param position A FlowerSlidePosition, UP or DOWN, that the user specifies
+     * @param targetPosition A FlowerSlidePosition, UP or DOWN, that the user specifies
      */
     public void setSlidePosition(FlowerSlidePosition position) {
         // TODO Type stellar code here
