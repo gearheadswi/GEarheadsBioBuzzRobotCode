@@ -46,6 +46,7 @@ public class Flower {
             // Set position of motor to DOWN_POSITION
             slideMotor.setTargetPosition(DOWN_POSITION);
             slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setTargetPosition(DOWN_POSITION);
             slideMotor.setPower(RETRACT_POWER);
             currentSlidePosition = FlowerSlidePosition.DOWN;
         } else if (targetPosition == FlowerSlidePosition.UP) {
