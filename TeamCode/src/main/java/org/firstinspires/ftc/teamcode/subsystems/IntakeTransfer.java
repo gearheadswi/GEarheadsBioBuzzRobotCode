@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -31,7 +32,6 @@ public class IntakeTransfer {
     private AnalogInput distanceSensor;
     private int ballCount = 0;
     private boolean isObjectPresent = false;
-
     private EncoderBasedCurrentLimitingMotor intakeCurrentLimiter;
     private EncoderBasedCurrentLimitingMotor transferCurrentLimiter;
     private double targetCurrent = 0;
@@ -94,24 +94,22 @@ public class IntakeTransfer {
      * 4)Then adds +1 object.
      */
     public void updateBallCount(){
-        double currentDistance = getCurrentDistance();
-
-        if (!isObjectPresent && currentDistance < BALL_DETECTED_STORAGE) {
-            if (targetCurrent > 0) {
-                if (ballCount < 4) {
-                    ballCount++;
-                }
-                isObjectPresent = true;
-            } else if (intakeMotor.getPower() < 0) {
-                if (targetCurrent > 0) {
-                    ballCount--;
-                }
-                isObjectPresent = true;
-            }
-        }
-        if (isObjectPresent && currentDistance >= EMPTY_STORAGE) {
-            isObjectPresent= false;
-        }
+        boolean isBeamBroken = getCurrentDistance() > 40;
+       if (!isObjectPresent && isBeamBroken){
+           if(intakeMotor.getPower() > 0) {
+               if (ballCount < 4) {
+                   ballCount++;
+               }
+           } else if (intakeMotor.getPower() < 0){
+               if (ballCount > 0)  {
+                   ballCount--;
+               }
+           }
+           isObjectPresent = true;
+       }
+       if (isObjectPresent && !isBeamBroken) {
+           isObjectPresent = false;
+       }
     }
 
     /**
@@ -119,7 +117,7 @@ public class IntakeTransfer {
      *
      * @return ball count
      */
-    public int returnBallCount() {
+    public int getBallCount() {
         return ballCount;
     }
 
