@@ -37,7 +37,7 @@ public class Flower {
     public void setSlidePosition(FlowerSlidePosition targetPosition) {
         // TODO Type stellar code here
         // TODO check logic
-        if (position == FlowerSlidePosition.DOWN) {
+        if (targetPosition == FlowerSlidePosition.DOWN) {
             // Set position of motor to DOWN_POSITION
             slideMotor.setTargetPosition(DOWN_POSITION);
             slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
