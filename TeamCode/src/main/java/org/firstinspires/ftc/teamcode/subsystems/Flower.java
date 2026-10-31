@@ -63,6 +63,15 @@ public class Flower {
     public FlowerSlidePosition getCurrentSlidePosition() {
         return currentSlidePosition;
     }
+    public getCurrentSlidePositionTicks() {
+        return slideMotor.getCurrentPosition();
+    }
+    public void FLowerSlideTestSetup() {
+        slideMotor.setDirection(DcMotor.Direction.FORWARD); // flip if up is down
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
 
     /**
      * Cuts all power to the motors, making them float down to lower position.
