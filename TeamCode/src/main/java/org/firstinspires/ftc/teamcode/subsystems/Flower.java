@@ -28,7 +28,7 @@ public class Flower {
         // Initializing hardware from HardwareMap
         slideMotor = hardwareMap.get(DcMotor.class, "flowerSlides");
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); // Slides will enter down position when not being held up
         slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         currentSlidePosition = FlowerSlidePosition.DOWN;
