@@ -13,18 +13,28 @@ public class Brakes {
     private Servo leftBrake;
     private Servo rightBrake;
 
+    private boolean breaking;
+
     public Brakes(HardwareMap hardwareMap){
         leftBrake = hardwareMap.get(Servo.class, "leftBrake");
         rightBrake = hardwareMap.get(Servo.class, "rightBrake");
+
+        breaking = false;
     }
 
     public void brake(){
         leftBrake.setPosition(LEFT_BRAKE_DOWN_POS);
         rightBrake.setPosition(RIGHT_BRAKE_DOWN_POS);
+        breaking = true;
     }
 
     public void release(){
         leftBrake.setPosition(LEFT_BRAKE_UP_POS);
         rightBrake.setPosition(RIGHT_BRAKE_UP_POS);
+        breaking = false;
+    }
+
+    public boolean isBreaking(){
+        return breaking;
     }
 }
