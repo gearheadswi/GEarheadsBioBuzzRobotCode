@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.hardware.EncoderBasedCurrentLimitingMotor;
 
 public class IntakeTransfer {
-    private static final double BLOCKER_CLOSED_POSITION = 1; // TODO Tune
-    private static final double BLOCKER_OPEN_POSITION = 0; // TODO Tune
+    private static final double BLOCKER_CLOSED_POSITION = 0.15;
+    private static final double BLOCKER_OPEN_POSITION = 0.7;
     private static final double FLOWER_RAMP_DOWN_LEFT = 0.975;
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0;
     private static final double FLOWER_RAMP_UP_LEFT = 0;
@@ -50,7 +50,7 @@ public class IntakeTransfer {
         transferMotor = hardwareMap.get(DcMotorEx.class, "transfer");
         transferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        blockerServo = hardwareMap.get(Servo.class, "blockerServo");
+        blockerServo = hardwareMap.get(Servo.class, "blocker");
 
         flowerServoLeft = hardwareMap.get(Servo.class, "leftRamp");
         flowerServoRight = hardwareMap.get(Servo.class, "rightRamp");
