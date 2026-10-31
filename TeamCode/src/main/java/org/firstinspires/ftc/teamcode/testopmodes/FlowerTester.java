@@ -10,6 +10,8 @@ public class FlowerTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Flower flower = new Flower(hardwareMap);
+
+        waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.leftBumperWasPressed()) {
                 flower.setSlidePosition(Flower.FlowerSlidePosition.UP);
