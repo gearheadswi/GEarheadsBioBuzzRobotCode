@@ -24,7 +24,7 @@ public class FlowerTester extends LinearOpMode {
             telemetry.addData("Current Slide Position (UP/DOWN): ", flower.getCurrentSlidePosition());
             telemetry.addData("Ticks", flower.getCurrentSlidePositionTicks());
             telemetry.addData("Position (in)", "%.2f", flower.getCurrentSlidePositionTicks() / Flower.TICKS_PER_INCH);
-            telemetry.addData("Power", "%.2f", JOYSTICK_POWER);
+            //telemetry.addData("Power", "%.2f", JOYSTICK_POWER);
             telemetry.update();
         }
     }
