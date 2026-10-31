@@ -9,6 +9,7 @@ public class Flower {
     private static final double EXTEND_POWER = 1.0; // Double representing the maximum power the slideMotor can use to stay in UP_POSITION
     private static final double RETRACT_POWER = 0.2; // Double representing the power value the slideMotor will use to manually stop and retract instead of relying on FLOAT
     public static final double TICKS_PER_INCH = 45; // Double representing number of ticks the slideMotor travels per every inch the slides move
+    public static final double TEST_POWER = 0.5; // Double representing the amount of power the slideMotor will use in testing
     private static final int POSITION_TOLERANCE = 10; // Int representing the possible error in up or down positions before the slides are declared at that position
     public enum FlowerSlidePosition {
         UP, DOWN
