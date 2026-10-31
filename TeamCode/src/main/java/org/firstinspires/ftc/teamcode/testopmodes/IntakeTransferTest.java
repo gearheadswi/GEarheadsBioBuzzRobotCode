@@ -38,7 +38,7 @@ public class IntakeTransferTest extends LinearOpMode {
             intakeTransfer.updateCurrentLimiting();
 
             telemetry.addData("Distance", intakeTransfer.getCurrentDistance());
-            telemetry.addData("Ball Count:", intakeTransfer.returnBallCount());
+            telemetry.addData("Ball Count:", intakeTransfer.getBallCount());
             telemetry.update();
         }
     }
