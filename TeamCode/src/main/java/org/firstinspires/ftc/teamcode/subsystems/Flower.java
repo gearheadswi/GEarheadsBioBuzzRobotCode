@@ -75,7 +75,7 @@ public class Flower {
     public void FLowerSlideTestSetup() {
         slideMotor.setDirection(DcMotor.Direction.FORWARD); // flip if up is down
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
