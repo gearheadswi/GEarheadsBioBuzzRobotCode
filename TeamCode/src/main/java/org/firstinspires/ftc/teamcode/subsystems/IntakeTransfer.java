@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,19 +16,19 @@ import org.firstinspires.ftc.teamcode.hardware.EncoderBasedCurrentLimitingMotor;
 public class IntakeTransfer {
     private static final double BLOCKER_CLOSED_POSITION = 1; // TODO Tune
     private static final double BLOCKER_OPEN_POSITION = 0; // TODO Tune
-    private static final double FLOWER_RAMP_DOWN_LEFT = 0.95; // TODO Tune
-    private static final double FLOWER_RAMP_DOWN_RIGHT = 0; // TODO Tune
-    private static final double FLOWER_RAMP_UP_LEFT = 0.025; // TODO Tune
+    private static final double FLOWER_RAMP_DOWN_LEFT = 0.975;
+    private static final double FLOWER_RAMP_DOWN_RIGHT = 0;
+    private static final double FLOWER_RAMP_UP_LEFT = 0;
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
-    private static final double EMPTY_STORAGE = 25.0;
-    private static final double BALL_DETECTED_STORAGE = 20.0;
+    private static final double EMPTY_STORAGE = 12.5; // CM
+    private static final double BALL_DETECTED_STORAGE = 9; // CM
     private static final double MAX_CURRENT = 6;
     private DcMotorEx intakeMotor;
     private DcMotorEx transferMotor;
     private Servo blockerServo;
     private Servo flowerServoLeft;
     private Servo flowerServoRight;
-    private DistanceSensor distanceSensor;
+    private AnalogInput distanceSensor;
     private int ballCount = 0;
     private boolean isObjectPresent = false;
 
@@ -41,7 +42,7 @@ public class IntakeTransfer {
      */
     public IntakeTransfer(HardwareMap hardwareMap){
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class,"breakbeam");
+        distanceSensor = hardwareMap.get(AnalogInput.class,"breakbeam");
 
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -54,7 +55,7 @@ public class IntakeTransfer {
         flowerServoLeft = hardwareMap.get(Servo.class, "leftRamp");
         flowerServoRight = hardwareMap.get(Servo.class, "rightRamp");
 
-        isObjectPresent = (distanceSensor.getDistance(DistanceUnit.CM) < BALL_DETECTED_STORAGE);
+        isObjectPresent = (getCurrentDistance() < BALL_DETECTED_STORAGE);
         // Initializing hardware from hardware map
 
         VoltageSensor voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
@@ -93,7 +94,7 @@ public class IntakeTransfer {
      * 4)Then adds +1 object.
      */
     public void updateBallCount(){
-        double currentDistance = distanceSensor.getDistance(DistanceUnit.CM);
+        double currentDistance = getCurrentDistance();
 
         if (!isObjectPresent && currentDistance < BALL_DETECTED_STORAGE) {
             if (targetCurrent > 0) {
@@ -153,5 +154,13 @@ public class IntakeTransfer {
     public void flowerIntakeArmDown(){
         flowerServoLeft.setPosition(FLOWER_RAMP_DOWN_LEFT);
         flowerServoRight.setPosition(FLOWER_RAMP_DOWN_RIGHT);
+    }
+
+    /**
+     * Gets the current distance detected by the distance sensor
+     * @return distance (CM)
+     */
+    public double getCurrentDistance(){
+        return (distanceSensor.getVoltage() / 3.3) * 100;
     }
 }
