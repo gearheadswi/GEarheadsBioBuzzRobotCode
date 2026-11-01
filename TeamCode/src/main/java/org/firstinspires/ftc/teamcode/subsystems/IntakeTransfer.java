@@ -1,17 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.hardware.EncoderBasedCurrentLimitingMotor;
 
 public class IntakeTransfer {
@@ -21,19 +15,22 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0;
     private static final double FLOWER_RAMP_UP_LEFT = 0;
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
-    private static final double EMPTY_STORAGE = 12.5; // CM
-    private static final double BALL_DETECTED_STORAGE = 9; // CM
+
+    private static final double DIGITAL_THRESHOLD = 40; // CM-ish
     private static final double MAX_CURRENT = 6;
+
     private DcMotorEx intakeMotor;
     private DcMotorEx transferMotor;
     private Servo blockerServo;
     private Servo flowerServoLeft;
     private Servo flowerServoRight;
     private AnalogInput distanceSensor;
-    private int ballCount = 0;
-    private boolean isObjectPresent = false;
+
     private EncoderBasedCurrentLimitingMotor intakeCurrentLimiter;
     private EncoderBasedCurrentLimitingMotor transferCurrentLimiter;
+
+    private int ballCount = 0;
+    private boolean isObjectPresent = false;
     private double targetCurrent = 0;
 
     /**
@@ -41,7 +38,6 @@ public class IntakeTransfer {
      * @param hardwareMap hardware map from opmode
      */
     public IntakeTransfer(HardwareMap hardwareMap){
-
         distanceSensor = hardwareMap.get(AnalogInput.class,"breakbeam");
 
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
@@ -55,7 +51,6 @@ public class IntakeTransfer {
         flowerServoLeft = hardwareMap.get(Servo.class, "leftRamp");
         flowerServoRight = hardwareMap.get(Servo.class, "rightRamp");
 
-        isObjectPresent = (getCurrentDistance() < BALL_DETECTED_STORAGE);
         // Initializing hardware from hardware map
 
         VoltageSensor voltageSensor = hardwareMap.get(VoltageSensor.class, "Control Hub");
@@ -78,6 +73,15 @@ public class IntakeTransfer {
     }
 
     /**
+     * Stops the intake motor from spinning
+     */
+    public void disableintake(){
+        intakeMotor.setPower(0);
+        transferMotor.setPower(0);
+        targetCurrent = 0;
+    }
+
+    /**
      * Updates the motor to achieve target current.
      */
     public void updateCurrentLimiting(){
@@ -94,22 +98,22 @@ public class IntakeTransfer {
      * 4)Then adds +1 object.
      */
     public void updateBallCount(){
-        boolean isBeamBroken = getCurrentDistance() > 40;
-       if (!isObjectPresent && isBeamBroken){
-           if(intakeMotor.getPower() > 0) {
+        boolean isBeamBroken = getCurrentDistance() > DIGITAL_THRESHOLD;
+        if (!isObjectPresent && isBeamBroken){
+           if(targetCurrent > 0) {
                if (ballCount < 4) {
                    ballCount++;
                }
-           } else if (intakeMotor.getPower() < 0){
+           } else if (targetCurrent < 0){
                if (ballCount > 0)  {
                    ballCount--;
                }
            }
            isObjectPresent = true;
-       }
-       if (isObjectPresent && !isBeamBroken) {
+        }
+        if (isObjectPresent && !isBeamBroken) {
            isObjectPresent = false;
-       }
+        }
     }
 
     /**
@@ -126,7 +130,7 @@ public class IntakeTransfer {
      * Clears ball count
      */
     public void startBallRelease(){
-        blockerServo.setPosition(BLOCKER_OPEN_POSITION);//TODO
+        blockerServo.setPosition(BLOCKER_OPEN_POSITION);
         ballCount = 0;
     }
 
@@ -134,8 +138,7 @@ public class IntakeTransfer {
      * Sets blocker servo to close and stops letting balls out
      */
     public void stopBallRelease(){
-        blockerServo.setPosition(BLOCKER_CLOSED_POSITION);//TODO
-
+        blockerServo.setPosition(BLOCKER_CLOSED_POSITION);
     }
 
     /**
