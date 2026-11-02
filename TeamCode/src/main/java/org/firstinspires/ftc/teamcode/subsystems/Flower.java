@@ -53,10 +53,7 @@ public class Flower {
         // TODO Type stellar code here
         // TODO check logic
         if (targetPosition == FlowerSlidePosition.DOWN) {
-            // Set position of motor to DOWN_POSITION
-            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setTargetPosition(DOWN_POSITION);
-            slideMotor.setPower(RETRACT_POWER);
+            targetTicks = DOWN_POSITION;
             currentSlidePosition = FlowerSlidePosition.DOWN;
         } else if (targetPosition == FlowerSlidePosition.UP) {
             targetTicks = UP_POSITION;
