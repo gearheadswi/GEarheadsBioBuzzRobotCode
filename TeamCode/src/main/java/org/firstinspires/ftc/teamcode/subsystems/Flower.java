@@ -98,7 +98,9 @@ public class Flower {
     }
 
     /**
-     * Resets the motors and their encoders in case of emergency
+     * Resets the motors and their encoders in case of emergency.
+     * The encoder is re-zeroed wherever the slides are, so they must be manually lowered
+     * to the bottom before calling setSlidePosition() again.
      */
     public void fullReset() {
         // TODO Write great code
