@@ -23,6 +23,7 @@ public class Flower {
     }
 
     private final DcMotor slideMotor;
+    private final PIDF slidePidf = new PIDF(P, I, D, 0); // f is 0 because HOLD_POWER is only applied at UP_POSITION
     private FlowerSlidePosition currentSlidePosition;
 
     /**
