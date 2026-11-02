@@ -25,6 +25,7 @@ public class Launcher {
     }
 
     private void setMotorSpeed(double speed){
+        launchSpeed = speed;// TODO: is this right cause this line used to not exist.
         launchMotor1.setVelocity(launchSpeed);
     }
 
