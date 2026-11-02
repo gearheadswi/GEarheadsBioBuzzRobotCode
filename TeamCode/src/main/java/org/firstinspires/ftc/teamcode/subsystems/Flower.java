@@ -107,6 +107,7 @@ public class Flower {
      */
     public void fullReset() {
         // TODO Write great code
+        active = false; // Encoder zero is wiped, so update() must not drive toward the old tick targets
         manualStop();
         // TODO make update logic
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
