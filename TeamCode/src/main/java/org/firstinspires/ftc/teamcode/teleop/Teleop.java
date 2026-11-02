@@ -19,6 +19,10 @@ import org.firstinspires.ftc.teamcode.utils.TeamColor;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @TeleOp
 public class Teleop extends OpMode {
@@ -26,9 +30,9 @@ public class Teleop extends OpMode {
     private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(8, 102.7, 0);
     private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(133.5, 38.6, 180);
     private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
+            -90,
             0,
-            0,
-            1500
+            1000
     );
     private Robot robot;
 
@@ -42,6 +46,9 @@ public class Teleop extends OpMode {
     private boolean aimOverride = true;
 
     private long prevTimeStamp = 0;
+
+    // TEMP
+    private DcMotorEx motor;
 
     @Override
     public void init() {
@@ -65,6 +72,12 @@ public class Teleop extends OpMode {
             setStartPos();
         }
         printSetTeam();
+
+        // TEMP
+        motor = hardwareMap.get(DcMotorEx.class, "launcher");
+        motor.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(36, 0, 0, 14));
     }
 
     private void setStartPos(){
@@ -162,6 +175,8 @@ public class Teleop extends OpMode {
             currentConfig = AimingCalculator.aimAtTarget(team, robotPose);
         }
         turret.setTurretAimOffset(currentConfig.getTurretAngle());
+        // TEMP
+        motor.setVelocity(currentConfig.getLauncherVelocity());
 
         // Update stuff
         turret.updateMovement(dt, Math.toDegrees(robotPose.heading()), Math.toDegrees(robotVelocity.omega));

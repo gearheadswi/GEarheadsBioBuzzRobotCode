@@ -7,8 +7,9 @@ import com.qualcomm.robotcore.util.Range;
  */
 public class TurretProfileController {
 
-    public static double leftLimitDeg = 359;
-    public static double rightLimitDeg = 89;
+    // Offseted 90 CW
+    public static double leftLimitDeg = 90;
+    public static double rightLimitDeg = -181;
     public static double limitSlowZoneDeg = 12.0;
 
     // These are static btw now if that ever causes problems

@@ -12,13 +12,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
+import org.firstinspires.ftc.teamcode.utils.control.PIDF;
 import org.firstinspires.ftc.teamcode.utils.control.TurretProfileController;
 
 public class Turret {
     private static final double CALIBRATING_POWER = 0.4;
     private static final double CALIBRATION_DELAY = 0.5; // Seconds
     private static final double CALIBRATION_MIN_VEL = 0.0001; // Deg per second
-    private static double ABSOLUTE_ENCODER_OFFSET = -301; // Degrees
+    private static double ABSOLUTE_ENCODER_OFFSET = -303.4; // Degrees
 
     private final CRServo powerServo1;
     private final CRServo powerServo2;
@@ -48,7 +49,7 @@ public class Turret {
      * @return rotation (degrees)
      */
     public double getAbsolutePosition(){
-        return 360 - (-absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 3600) % 360;
+        return ((360 - (-absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 3600) % 360) * 0.9688 - 1.53 + 360) % 360;
     }
 
     private void setServoPower(double power){
@@ -75,7 +76,11 @@ public class Turret {
                 calibrating = false;
             }
         } else {
-            double power = turretController.update(dt, currentRotation, turretVelocity, robotHeading, robotRotationalVelocity);
+            double offsettedAngle = (currentRotation+ 90) % 360;
+            if (offsettedAngle > 90){
+                offsettedAngle -= 360;
+            }
+            double power = turretController.update(dt, offsettedAngle, turretVelocity, robotHeading, robotRotationalVelocity);
             setServoPower(power);
         }
     }
@@ -98,7 +103,11 @@ public class Turret {
      * @param angleOffset of turret
      */
     public void setTurretAimOffset(double angleOffset) {
-        turretController.setRobotRelativeTargetDeg(angleOffset);
+        double offsettedAngle = (angleOffset + 90) % 360;
+        if (offsettedAngle > 90){
+            offsettedAngle -= 360;
+        }
+        turretController.setRobotRelativeTargetDeg(offsettedAngle);
     }
 
     // Ivy

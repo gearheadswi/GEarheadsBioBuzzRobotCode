@@ -30,13 +30,13 @@ public class TurretPIDFtuner extends LinearOpMode {
                 turret.startCalibrate();
             }
             if (gamepad1.yWasPressed()){
-                targetDeg = 340;
+                targetDeg -= 20;
             }
             if (gamepad1.xWasPressed()){
-                targetDeg = 290;
+                targetDeg += 20;
             }
             if (gamepad1.bWasPressed()){
-                targetDeg = 220;
+                targetDeg = 270;
             }
 
             if(gamepad2.bWasPressed()){

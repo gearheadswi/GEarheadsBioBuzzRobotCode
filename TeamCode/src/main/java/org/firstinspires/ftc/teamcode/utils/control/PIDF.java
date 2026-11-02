@@ -94,7 +94,13 @@ public class PIDF {
         return proportianal + integ + deriv + f;
     }
 
-    private double angle_difference(double a, double b){
+    /**
+     * Find the signed difference between two angles
+     * @param a radians
+     * @param b radians
+     * @return radians
+     */
+    public static double angle_difference(double a, double b){
         double chord_length =
                 Math.sqrt(
                         Math.pow(Math.cos(a) - Math.cos(b),2)
