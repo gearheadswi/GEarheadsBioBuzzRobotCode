@@ -18,8 +18,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp
 public class Teleop extends OpMode {
     private static final PoseFactory poseFactory = PoseFactory.degrees();
-    private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(31, 8, 90);
-    private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(110, 113.5, -90);
+    private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(8, 102.7, 0);
+    private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(133.5, 38.6, 180);
     private Robot robot;
 
     private Follower follower;
@@ -57,6 +57,8 @@ public class Teleop extends OpMode {
 
     private void printSetTeam(){
         telemetry.addData("Set Team", team);
+        telemetry.addLine("A to switch team");
+        telemetry.addLine("Y to reset start pos");
         telemetry.update();
     }
 
@@ -71,6 +73,7 @@ public class Teleop extends OpMode {
         if (gamepad1.yWasPressed() || gamepad2.yWasPressed()){
             setStartPos();
             telemetry.addData("Set default position for ", team);
+            printSetTeam();
             telemetry.update();
         }
     }
@@ -83,10 +86,14 @@ public class Teleop extends OpMode {
     public void loop() {
         DrivePowers powers = ManualDrive.fieldCentric(
                 -gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x,
+                -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x,
                 follower.pose().heading() + ((team == TeamColor.BLUE) ? Math.PI : 0)
         );
+
+        if (gamepad1.psWasPressed()){
+            follower.setHeading(team == TeamColor.RED ? DEFAULT_START_POSE_RED.heading() : DEFAULT_START_POSE_BLUE.heading());
+        }
 
 //        ManualDrive.driveOrHold(follower, powers);
         follower.manual(powers);
@@ -94,5 +101,9 @@ public class Teleop extends OpMode {
         // Update stuff
         follower.update();
         Scheduler.execute();
+
+        telemetry.addData("X", follower.pose().x());
+        telemetry.addData("Y", follower.pose().y());
+        telemetry.addData("Rotation", follower.pose().heading());
     }
 }

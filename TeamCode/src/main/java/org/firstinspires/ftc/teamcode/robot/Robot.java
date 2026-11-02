@@ -17,7 +17,6 @@ import static com.pedropathing.ivy.groups.Groups.repeat;
 public class Robot {
     public TeamColor teamName;
     public HardwareMap hardwareMap;
-    public Imu imu;
 
     public Robot(OpMode opMode, TeamColor team) {
         hardwareMap = opMode.hardwareMap;
@@ -26,7 +25,6 @@ public class Robot {
 
     /** Instantiates all subsystems. Call once inside {@code OpMode.init()}. */
     public void initSubsystems() {
-        imu = new Imu(hardwareMap);
     }
 
     public void intiSequencesTeleop(){
