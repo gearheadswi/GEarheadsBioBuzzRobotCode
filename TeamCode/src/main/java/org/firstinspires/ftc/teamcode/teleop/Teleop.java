@@ -65,7 +65,14 @@ public class Teleop extends OpMode {
         telemetry.addData("Set Team", team);
         telemetry.addLine("A to switch team");
         telemetry.addLine("Y to reset start pos");
+        printPositionInfo();
         telemetry.update();
+    }
+
+    private void printPositionInfo(){
+        telemetry.addData("X", follower.pose().x());
+        telemetry.addData("Y", follower.pose().y());
+        telemetry.addData("Rotation", follower.pose().heading());
     }
 
     @Override
@@ -134,8 +141,9 @@ public class Teleop extends OpMode {
         follower.update();
         Scheduler.execute();
 
-        telemetry.addData("X", follower.pose().x());
-        telemetry.addData("Y", follower.pose().y());
-        telemetry.addData("Rotation", follower.pose().heading());
+        // Telemetry
+        telemetry.addData("Ball count", intakeTransfer.getBallCount());
+        printPositionInfo();
+        telemetry.update();
     }
 }

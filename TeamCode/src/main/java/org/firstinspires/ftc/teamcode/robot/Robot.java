@@ -38,5 +38,6 @@ public class Robot {
     public void startSequenceTele(){
         intake.flowerIntakeArmUp();
         intake.activateIntake();
+        intake.stopBallRelease();
     }
 }
