@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
 import static com.pedropathing.ivy.groups.Groups.repeat;
@@ -18,6 +19,7 @@ public class Robot {
     public HardwareMap hardwareMap;
 
     public IntakeTransfer intake;
+    public Turret turret;
 
     public Robot(OpMode opMode, TeamColor team) {
         hardwareMap = opMode.hardwareMap;
@@ -27,6 +29,7 @@ public class Robot {
     /** Instantiates all subsystems. Call once inside {@code OpMode.init()}. */
     public void initSubsystems() {
         intake = new IntakeTransfer(hardwareMap);
+        turret = new Turret(hardwareMap);
     }
 
     public void intiSequencesTeleop(){

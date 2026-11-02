@@ -4,12 +4,16 @@ import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
+import org.firstinspires.ftc.teamcode.utils.AimingCalculator.TheoreticalLaunchConfiguration;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
 import com.pedropathing.drivetrain.DrivePowers;
@@ -21,14 +25,23 @@ public class Teleop extends OpMode {
     private static final PoseFactory poseFactory = PoseFactory.degrees();
     private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(8, 102.7, 0);
     private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(133.5, 38.6, 180);
+    private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
+            0,
+            0,
+            1500
+    );
     private Robot robot;
 
     private Follower follower;
     private IntakeTransfer intakeTransfer;
+    private Turret turret;
 
     private TeamColor team = TeamColor.RED;
 
     private boolean grabbingFlower = false;
+    private boolean aimOverride = true;
+
+    private long prevTimeStamp = 0;
 
     @Override
     public void init() {
@@ -39,6 +52,7 @@ public class Teleop extends OpMode {
 //        robot.intiSequencesTeleop();
 
         intakeTransfer = robot.intake;
+        turret = robot.turret;
 
         follower = Constants.create(hardwareMap);
 
@@ -98,6 +112,13 @@ public class Teleop extends OpMode {
 
     @Override
     public void loop() {
+        // Positioning
+        Pose robotPose = follower.pose();
+        Velocity robotVelocity = follower.velocity();
+        double dt = (System.currentTimeMillis() - prevTimeStamp) / 1000.0;
+        prevTimeStamp = System.currentTimeMillis();
+
+        // DRIVETRAIN
         double driveForce = gamepad1.right_trigger_pressed ? 0.33 : 1;
         DrivePowers powers = ManualDrive.fieldCentric(
                 -gamepad1.left_stick_y * driveForce,
@@ -106,11 +127,14 @@ public class Teleop extends OpMode {
                 follower.pose().heading() + ((team == TeamColor.BLUE) ? Math.PI : 0)
         );
 
+//        ManualDrive.driveOrHold(follower, powers);
+        follower.manual(powers);
+
         if (gamepad1.psWasPressed()){
             follower.setHeading(team == TeamColor.RED ? DEFAULT_START_POSE_RED.heading() : DEFAULT_START_POSE_BLUE.heading());
         }
 
-        // INTAKE/TRANSFER Block
+        // INTAKE/TRANSFER
         if (gamepad2.leftTriggerWasPressed()){
             intakeTransfer.reverseIntake();
         } else if (gamepad2.leftTriggerWasReleased()){
@@ -132,10 +156,15 @@ public class Teleop extends OpMode {
             intakeTransfer.stopBallRelease();
         }
 
-//        ManualDrive.driveOrHold(follower, powers);
-        follower.manual(powers);
+        // TURRET/AIMING
+        TheoreticalLaunchConfiguration currentConfig = DEFAULT_LAUNCH_CONFIG;
+        if (!aimOverride){
+            currentConfig = AimingCalculator.aimAtTarget(team, robotPose);
+        }
+        turret.setTurretAimOffset(currentConfig.getTurretAngle());
 
         // Update stuff
+        turret.updateMovement(dt, Math.toDegrees(robotPose.heading()), Math.toDegrees(robotVelocity.omega));
         intakeTransfer.updateCurrentLimiting();
         intakeTransfer.updateBallCount();
         follower.update();
