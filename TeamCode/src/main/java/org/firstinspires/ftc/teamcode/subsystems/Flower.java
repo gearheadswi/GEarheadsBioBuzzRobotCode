@@ -25,6 +25,8 @@ public class Flower {
     private final DcMotor slideMotor;
     private final PIDF slidePidf = new PIDF(P, I, D, 0); // f is 0 because HOLD_POWER is only applied at UP_POSITION
     private FlowerSlidePosition currentSlidePosition;
+    private int targetTicks = DOWN_POSITION; // Target position of the slides in ticks
+    private boolean active = false; // False when the slides should be left alone, such as after manualStop
 
     /**
      * Initialize hardware for flower subsystem.
