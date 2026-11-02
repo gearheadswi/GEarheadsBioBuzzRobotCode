@@ -33,6 +33,7 @@ public class Flower {
      */
     public Flower(HardwareMap hardwareMap) {
         // Initializing hardware from HardwareMap
+        // The encoder zero is set here, so the slides must be fully lowered when this runs
         slideMotor = hardwareMap.get(DcMotor.class, "flowerSlides");
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
