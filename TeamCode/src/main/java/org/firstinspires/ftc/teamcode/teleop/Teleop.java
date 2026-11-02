@@ -9,10 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.Turret;
-import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
-import org.firstinspires.ftc.teamcode.utils.AimingCalculator.TheoreticalLaunchConfiguration;
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
@@ -21,25 +19,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp
 public class Teleop extends OpMode {
     private static final PoseFactory poseFactory = PoseFactory.degrees();
-    private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(31, 8, 90);
-    private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(110, 113.5, -90);
-    private final TheoreticalLaunchConfiguration defaultLaunchConfig = new TheoreticalLaunchConfiguration(
-            0,
-            45,
-            1
-    );
-
+    private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(8, 102.7, 0);
+    private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(133.5, 38.6, 180);
     private Robot robot;
-    private TeamColor team = TeamColor.RED;
-
-    private Turret turret;
 
     private Follower follower;
+    private IntakeTransfer intakeTransfer;
 
-    private long lastUpdate = 0; // Milliseconds
+    private TeamColor team = TeamColor.RED;
 
-    // When true, sets launch config to default launch config
-    private boolean launchOverride = true;
+    private boolean grabbingFlower = false;
 
     @Override
     public void init() {
@@ -47,10 +36,9 @@ public class Teleop extends OpMode {
 
         robot = new Robot(this, team);
         robot.initSubsystems();
-
-        turret = robot.turret;
-
 //        robot.intiSequencesTeleop();
+
+        intakeTransfer = robot.intake;
 
         follower = Constants.create(hardwareMap);
 
@@ -65,6 +53,28 @@ public class Teleop extends OpMode {
         printSetTeam();
     }
 
+    private void setStartPos(){
+        if (team == TeamColor.RED){
+            follower.setPose(DEFAULT_START_POSE_RED);
+        } else {
+            follower.setPose(DEFAULT_START_POSE_BLUE);
+        }
+    }
+
+    private void printSetTeam(){
+        telemetry.addData("Set Team", team);
+        telemetry.addLine("A to switch team");
+        telemetry.addLine("Y to reset start pos");
+        printPositionInfo();
+        telemetry.update();
+    }
+
+    private void printPositionInfo(){
+        telemetry.addData("X", follower.pose().x());
+        telemetry.addData("Y", follower.pose().y());
+        telemetry.addData("Rotation", follower.pose().heading());
+    }
+
     @Override
     public void init_loop() {
 //        Scheduler.execute();
@@ -76,84 +86,64 @@ public class Teleop extends OpMode {
         if (gamepad1.yWasPressed() || gamepad2.yWasPressed()){
             setStartPos();
             telemetry.addData("Set default position for ", team);
+            printSetTeam();
             telemetry.update();
         }
     }
 
     @Override
     public void start() {
-        getDt();
+        robot.startSequenceTele();
     }
 
     @Override
     public void loop() {
-        double robotHeading = follower.pose().heading();
-        double robotHeadingVel = follower.velocity().omega;
-        Pose robotPose = follower.pose();
-        double dt = getDt();
-
-        // TURRET/RANGING BLOCK
-//        // Main Controls
-//        if (gamepad1.xWasPressed()) {
-//            launchOverride = !launchOverride;
-//        }
-//
-//        // Aiming / Ranging Control
-//        TheoreticalLaunchConfiguration launchConfig;
-//        if (launchOverride){
-//            launchConfig = defaultLaunchConfig;
-//        } else {
-//            launchConfig = AimingCalculator.aimAtTarget(
-//                    team,
-//                    robotPose
-//            );
-//        }
-//
-//        turret.setTurretAimOffset(launchConfig.getTurretAngle());
-//
-//        turret.updateMovement(
-//                dt,
-//                Math.toDegrees(robotHeading),
-//                Math.toDegrees(robotHeadingVel)
-//        );
-
-        // Drivetrain
+        double driveForce = gamepad1.right_trigger_pressed ? 0.33 : 1;
         DrivePowers powers = ManualDrive.fieldCentric(
-                -gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x,
+                -gamepad1.left_stick_y * driveForce,
+                -gamepad1.left_stick_x * driveForce,
+                -gamepad1.right_stick_x * driveForce,
                 follower.pose().heading() + ((team == TeamColor.BLUE) ? Math.PI : 0)
         );
+
+        if (gamepad1.psWasPressed()){
+            follower.setHeading(team == TeamColor.RED ? DEFAULT_START_POSE_RED.heading() : DEFAULT_START_POSE_BLUE.heading());
+        }
+
+        // INTAKE/TRANSFER Block
+        if (gamepad2.leftTriggerWasPressed()){
+            intakeTransfer.reverseIntake();
+        } else if (gamepad2.leftTriggerWasReleased()){
+            intakeTransfer.activateIntake();
+        }
+
+        if (gamepad2.bWasPressed()){
+            grabbingFlower = !grabbingFlower;
+            if (grabbingFlower){
+                intakeTransfer.flowerIntakeArmDown();
+            } else {
+                intakeTransfer.flowerIntakeArmUp();
+            }
+        }
+
+        if (gamepad2.rightTriggerWasPressed()){
+            intakeTransfer.startBallRelease();
+        } else if (gamepad2.rightTriggerWasReleased()) {
+            intakeTransfer.stopBallRelease();
+        }
 
 //        ManualDrive.driveOrHold(follower, powers);
         follower.manual(powers);
 
         // Update stuff
+        intakeTransfer.updateCurrentLimiting();
+        intakeTransfer.updateBallCount();
         follower.update();
         Scheduler.execute();
-    }
 
-    /**
-     * Gets dt since last getDt call
-     * @return dt (Seconds)
-     */
-    private double getDt(){
-        long curTime = System.currentTimeMillis();
-        double dt = (curTime - lastUpdate) / 1000.0;
-        lastUpdate = curTime;
-        return dt;
-    }
-
-    private void setStartPos(){
-        if (team == TeamColor.RED){
-            follower.setPose(DEFAULT_START_POSE_RED);
-        } else {
-            follower.setPose(DEFAULT_START_POSE_BLUE);
-        }
-    }
-
-    private void printSetTeam(){
-        telemetry.addData("Set Team", team);
+        // Telemetry
+        telemetry.addData("Ball count", intakeTransfer.getBallCount());
+        printPositionInfo();
         telemetry.update();
     }
 }

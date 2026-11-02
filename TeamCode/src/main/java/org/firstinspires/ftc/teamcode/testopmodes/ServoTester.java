@@ -8,12 +8,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ServoTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Servo servo = hardwareMap.get(Servo.class, "test servo");
+        Servo servo = hardwareMap.get(Servo.class, "blocker");
         double current_position = 0.5;
         double increment = 0.05;
 
         waitForStart();
-
         while (opModeIsActive()) {
             if (gamepad1.leftBumperWasPressed() && current_position >= 0.05) {
                 current_position -= increment;
