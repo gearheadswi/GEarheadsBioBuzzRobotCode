@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.utils.PIDF;
+
 public class Flower {
     private static final int DOWN_POSITION = 40; // Int representing number of ticks for the slideMotor
     private static final int UP_POSITION = 470; // Int representing number of ticks for the slideMotor
