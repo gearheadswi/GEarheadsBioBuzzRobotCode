@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.hardware.Imu;
-import org.firstinspires.ftc.teamcode.subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
 import static com.pedropathing.ivy.groups.Groups.repeat;
@@ -18,6 +17,8 @@ public class Robot {
     public TeamColor teamName;
     public HardwareMap hardwareMap;
 
+    public IntakeTransfer intake;
+
     public Robot(OpMode opMode, TeamColor team) {
         hardwareMap = opMode.hardwareMap;
         teamName = team;
@@ -25,11 +26,17 @@ public class Robot {
 
     /** Instantiates all subsystems. Call once inside {@code OpMode.init()}. */
     public void initSubsystems() {
+        intake = new IntakeTransfer(hardwareMap);
     }
 
     public void intiSequencesTeleop(){
     }
 
     public void intiSequencesAuto(){
+    }
+
+    public void startSequenceTele(){
+        intake.flowerIntakeArmUp();
+        intake.activateIntake();
     }
 }

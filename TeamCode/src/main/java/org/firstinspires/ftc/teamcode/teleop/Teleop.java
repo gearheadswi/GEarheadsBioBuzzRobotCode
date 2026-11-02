@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
 import com.pedropathing.drivetrain.DrivePowers;
@@ -23,8 +24,11 @@ public class Teleop extends OpMode {
     private Robot robot;
 
     private Follower follower;
+    private IntakeTransfer intakeTransfer;
 
     private TeamColor team = TeamColor.RED;
+
+    private boolean grabbingFlower = false;
 
     @Override
     public void init() {
@@ -33,6 +37,8 @@ public class Teleop extends OpMode {
         robot = new Robot(this, team);
         robot.initSubsystems();
 //        robot.intiSequencesTeleop();
+
+        intakeTransfer = robot.intake;
 
         follower = Constants.create(hardwareMap);
 
@@ -80,14 +86,16 @@ public class Teleop extends OpMode {
 
     @Override
     public void start() {
+        robot.startSequenceTele();
     }
 
     @Override
     public void loop() {
+        double driveForce = gamepad1.right_trigger_pressed ? 0.33 : 1;
         DrivePowers powers = ManualDrive.fieldCentric(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
+                -gamepad1.left_stick_y * driveForce,
+                -gamepad1.left_stick_x * driveForce,
+                -gamepad1.right_stick_x * driveForce,
                 follower.pose().heading() + ((team == TeamColor.BLUE) ? Math.PI : 0)
         );
 
@@ -95,10 +103,34 @@ public class Teleop extends OpMode {
             follower.setHeading(team == TeamColor.RED ? DEFAULT_START_POSE_RED.heading() : DEFAULT_START_POSE_BLUE.heading());
         }
 
+        // INTAKE/TRANSFER Block
+        if (gamepad2.leftTriggerWasPressed()){
+            intakeTransfer.reverseIntake();
+        } else if (gamepad2.leftTriggerWasReleased()){
+            intakeTransfer.activateIntake();
+        }
+
+        if (gamepad2.bWasPressed()){
+            grabbingFlower = !grabbingFlower;
+            if (grabbingFlower){
+                intakeTransfer.flowerIntakeArmDown();
+            } else {
+                intakeTransfer.flowerIntakeArmUp();
+            }
+        }
+
+        if (gamepad2.rightTriggerWasPressed()){
+            intakeTransfer.startBallRelease();
+        } else if (gamepad2.rightTriggerWasReleased()) {
+            intakeTransfer.stopBallRelease();
+        }
+
 //        ManualDrive.driveOrHold(follower, powers);
         follower.manual(powers);
 
         // Update stuff
+        intakeTransfer.updateCurrentLimiting();
+        intakeTransfer.updateBallCount();
         follower.update();
         Scheduler.execute();
 
