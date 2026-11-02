@@ -108,6 +108,6 @@ public class Flower {
         // TODO make update logic
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Turn the motors back on
-        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }
