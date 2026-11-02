@@ -45,7 +45,8 @@ public class Flower {
     }
 
     /**
-     * Moves the slide according to which position the user wants to move it to, either UP or DOWN.
+     * Sets the position the user wants the slides to move to, either UP or DOWN.
+     * The slides only move while update() is being called every loop.
      *
      * @param targetPosition A FlowerSlidePosition, UP or DOWN, that the user specifies
      */
