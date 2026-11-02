@@ -59,6 +59,31 @@ public class Flower {
             targetTicks = UP_POSITION;
             currentSlidePosition = FlowerSlidePosition.UP;
         }
+        active = true;
+    }
+
+    /**
+     * Runs the PIDF controller for the slides. Must be called once every loop.
+     */
+    public void update() {
+        if (!active) return;
+
+        int ticks = getCurrentSlidePositionTicks();
+        double power;
+        power = -slidePidf.smooth(targetTicks, ticks) + HOLD_POWER;
+        power = Math.max(-EXTEND_POWER, Math.min(EXTEND_POWER, power));
+        slideMotor.setPower(power);
+    }
+
+    /**
+     * @return true if the slides are within POSITION_TOLERANCE of the current target position
+     */
+    public boolean isAtPosition() {
+        int ticks = getCurrentSlidePositionTicks();
+        if (currentSlidePosition == FlowerSlidePosition.DOWN) {
+            return ticks <= DOWN_POSITION + POSITION_TOLERANCE;
+        }
+        return Math.abs(ticks - UP_POSITION) <= POSITION_TOLERANCE;
     }
 
     /**
