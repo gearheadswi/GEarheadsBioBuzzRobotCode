@@ -14,17 +14,19 @@ public class FlowerTuning extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad2.dpadRightWasPressed()){
-                flower.slidePidf.p += 0.001;
+                flower.slidePidf.p += 0.0001;
             }
             if (gamepad2.dpadLeftWasPressed()){
-                flower.slidePidf.p -= 0.001;
+                flower.slidePidf.p -= 0.0001;
             }
 
             if (gamepad2.dpadUpWasPressed()){
-                flower.HOLD_POWER += 0.001;
+//                flower.HOLD_POWER += 0.001;
+                flower.slidePidf.i += 0.000001;
             }
             if (gamepad2.dpadDownWasPressed()){
-                flower.HOLD_POWER -= 0.001;
+//                flower.HOLD_POWER -= 0.001;
+                flower.slidePidf.i -= 0.000001;
             }
 
             if (gamepad1.leftBumperWasPressed()) {
@@ -37,6 +39,8 @@ public class FlowerTuning extends LinearOpMode {
             flower.update();
             telemetry.addData("P", flower.slidePidf.p);
             telemetry.addData("F", flower.HOLD_POWER);
+            telemetry.addData("I", "%.10f", flower.slidePidf.i);
+            telemetry.addData("D", "%.10f", flower.slidePidf.d);
             telemetry.addData("Current Slide Position (UP/DOWN): ", flower.getCurrentSlidePosition());
             telemetry.addData("Ticks", flower.getCurrentSlidePositionTicks());
             telemetry.addData("Position (in)", "%.2f", flower.getCurrentSlidePositionTicks() / Flower.TICKS_PER_INCH);

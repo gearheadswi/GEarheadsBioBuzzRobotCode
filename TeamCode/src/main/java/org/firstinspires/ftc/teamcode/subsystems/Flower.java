@@ -7,15 +7,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.utils.PIDF;
 
 public class Flower {
-    private static final int DOWN_POSITION = 300; // Int representing number of ticks for the slideMotor
+    private static final int DOWN_POSITION = 200; // Int representing number of ticks for the slideMotor
     private static final int UP_POSITION = 470; // Int representing number of ticks for the slideMotor
     private static final double EXTEND_POWER = 1.0; // Double representing the maximum power the slideMotor can use to stay in UP_POSITION
     private static final double RETRACT_POWER = 0.2; // Double representing the power value the slideMotor will use to manually stop and retract instead of relying on FLOAT
     public static final double TICKS_PER_INCH = 45; // Double representing number of ticks the slideMotor travels per every inch the slides move
     public static final double TEST_POWER = 0.5; // Double representing the amount of power the slideMotor will use in testing
     private static final int POSITION_TOLERANCE = 10; // Int representing the possible error in up or down positions before the slides are declared at that position
-    private static final double P = 0.006; // Double representing the proportional gain of the slide PIDF, in power per tick of error (tune this)
-    private static final double I = 0; // Double representing the integral gain of the slide PIDF. Keep at 0 unless integral clamping is added to PIDF.java (it has no anti-windup)
+    private static final double P = 0.0033; // Double representing the proportional gain of the slide PIDF, in power per tick of error (tune this)
+    private static final double I = 0.000004; // Double representing the integral gain of the slide PIDF. Keep at 0 unless integral clamping is added to PIDF.java (it has no anti-windup)
     private static final double D = 0; // Double representing the derivative gain of the slide PIDF (tune this)
     public double HOLD_POWER = 0.182; // Double representing the power the slideMotor needs to hold UP_POSITION against gravity (tune this)
     public enum FlowerSlidePosition {
@@ -74,6 +74,9 @@ public class Flower {
         double power;
         power = -slidePidf.smooth(targetTicks, ticks) + HOLD_POWER;
         power = Math.max(-EXTEND_POWER, Math.min(EXTEND_POWER, power));
+        if (currentSlidePosition == FlowerSlidePosition.DOWN && ticks > DOWN_POSITION + 50) {
+            power = 0;
+        }
         slideMotor.setPower(power);
     }
 

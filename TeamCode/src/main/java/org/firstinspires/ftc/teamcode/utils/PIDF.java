@@ -41,6 +41,9 @@ public class PIDF {
             time_step = 0;
         }
         integral += error * time_step;
+        if (Math.abs(error) < epsilon || Math.signum(integral) != Math.signum(error)) {
+            integral = 0;
+        }
 
         // (P)
         double proportianal = error * p;
@@ -51,7 +54,7 @@ public class PIDF {
         // can't divide by zero (D)
         double deriv = 0;
         if(time_step != 0){
-            deriv = -d * (prev - current_reading) / time_step;
+            deriv = d * (prev - current_reading) / time_step;
         }
         
         prev = current_reading;
