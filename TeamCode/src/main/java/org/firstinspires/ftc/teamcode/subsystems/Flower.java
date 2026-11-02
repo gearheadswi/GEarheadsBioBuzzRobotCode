@@ -7,23 +7,23 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.utils.PIDF;
 
 public class Flower {
-    private static final int DOWN_POSITION = 40; // Int representing number of ticks for the slideMotor
+    private static final int DOWN_POSITION = 300; // Int representing number of ticks for the slideMotor
     private static final int UP_POSITION = 470; // Int representing number of ticks for the slideMotor
     private static final double EXTEND_POWER = 1.0; // Double representing the maximum power the slideMotor can use to stay in UP_POSITION
     private static final double RETRACT_POWER = 0.2; // Double representing the power value the slideMotor will use to manually stop and retract instead of relying on FLOAT
     public static final double TICKS_PER_INCH = 45; // Double representing number of ticks the slideMotor travels per every inch the slides move
     public static final double TEST_POWER = 0.5; // Double representing the amount of power the slideMotor will use in testing
     private static final int POSITION_TOLERANCE = 10; // Int representing the possible error in up or down positions before the slides are declared at that position
-    private static final double P = 0.01; // Double representing the proportional gain of the slide PIDF, in power per tick of error (tune this)
+    private static final double P = 0.006; // Double representing the proportional gain of the slide PIDF, in power per tick of error (tune this)
     private static final double I = 0; // Double representing the integral gain of the slide PIDF. Keep at 0 unless integral clamping is added to PIDF.java (it has no anti-windup)
     private static final double D = 0; // Double representing the derivative gain of the slide PIDF (tune this)
-    private static final double HOLD_POWER = 0.1; // Double representing the power the slideMotor needs to hold UP_POSITION against gravity (tune this)
+    public double HOLD_POWER = 0.182; // Double representing the power the slideMotor needs to hold UP_POSITION against gravity (tune this)
     public enum FlowerSlidePosition {
         UP, DOWN
     }
 
     private final DcMotor slideMotor;
-    private final PIDF slidePidf = new PIDF(P, I, D, 0); // f is 0 because HOLD_POWER is only applied at UP_POSITION
+    public final PIDF slidePidf = new PIDF(P, I, D, 0); // f is 0 because HOLD_POWER is only applied at UP_POSITION
     private FlowerSlidePosition currentSlidePosition;
     private int targetTicks = DOWN_POSITION; // Target position of the slides in ticks
     private boolean active = false; // False when the slides should be left alone, such as after manualStop
