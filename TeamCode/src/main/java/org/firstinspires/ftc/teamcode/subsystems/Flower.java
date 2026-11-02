@@ -14,6 +14,10 @@ public class Flower {
     public static final double TICKS_PER_INCH = 45; // Double representing number of ticks the slideMotor travels per every inch the slides move
     public static final double TEST_POWER = 0.5; // Double representing the amount of power the slideMotor will use in testing
     private static final int POSITION_TOLERANCE = 10; // Int representing the possible error in up or down positions before the slides are declared at that position
+    private static final double P = 0.01; // Double representing the proportional gain of the slide PIDF, in power per tick of error (tune this)
+    private static final double I = 0; // Double representing the integral gain of the slide PIDF. Keep at 0 unless integral clamping is added to PIDF.java (it has no anti-windup)
+    private static final double D = 0; // Double representing the derivative gain of the slide PIDF (tune this)
+    private static final double HOLD_POWER = 0.1; // Double representing the power the slideMotor needs to hold UP_POSITION against gravity (tune this)
     public enum FlowerSlidePosition {
         UP, DOWN
     }
