@@ -94,6 +94,7 @@ public class Flower {
      */
     public void manualStop() {
         // TODO check code
+        active = false; // Stops update() from reapplying power
         slideMotor.setPower(0);
         // Once the slides reach the lower position, the position is set to down
         currentSlidePosition = FlowerSlidePosition.DOWN;
