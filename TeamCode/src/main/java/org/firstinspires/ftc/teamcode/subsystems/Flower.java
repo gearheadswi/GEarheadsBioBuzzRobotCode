@@ -53,6 +53,7 @@ public class Flower {
     public void setSlidePosition(FlowerSlidePosition targetPosition) {
         // TODO Type stellar code here
         // TODO check logic
+        slidePidf.reset(); // PIDF must be reset whenever it is used after waiting
         if (targetPosition == FlowerSlidePosition.DOWN) {
             targetTicks = DOWN_POSITION;
             currentSlidePosition = FlowerSlidePosition.DOWN;
