@@ -83,6 +83,7 @@ public class Flower {
         return slideMotor.getCurrentPosition();
     }
     public void FLowerSlideTestSetup() {
+        active = false; // update() must not override manual test power
         slideMotor.setDirection(DcMotor.Direction.FORWARD); // flip if up is down
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
