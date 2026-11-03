@@ -29,21 +29,20 @@ public class HiveVision extends LinearOpMode {
             new HashSet<>(Arrays.asList(CLASS_RED, CLASS_BLUE, CLASS_YELLOW));
 
     public static double MIN_CONF = 0.30;
-    private static final long MAX_STALENESS_US = 120_000;
+    private static final long MAX_STALENESS_MS = 500; // Changed from microseconds because us was the incorrect unit & tuned value
 
     public static double LOCK_GATE_DEG = 12.0;
     public static long LOCK_LOST_MS = 300;
-
-    // If your robot drives backward, change this to a negative value (e.g., -0.40)
-    public static double CHASE_FWD_POWER = -0.40;
-    public static double TURN_KP = -0.025;
+    public static double CHASE_FWD_POWER = -0.40; // Be ready to change this if the robot flies backwards!
+    public static double TURN_KP = -0.025; // TODO tune PID
     public static double MIN_TURN = 0.08;
     public static double MAX_TURN = 0.60;
     public static double SEARCH_TURN = 0.30;
 
-    private static final double TA_DISTANCE_K = 55.0 * Math.sqrt(0.280);
+    private static final double TA_DISTANCE_K = 55.0 * Math.sqrt(0.280); // TODO use limelight dashboard to tune the screen area-to-distance constant ratio (55cm away is 0.28 percent cover) or since this was calibrated for BioBuzz, hope and pray it's correct
 
-    public static double PICKUP_TA = 0.0;
+    // public static double PICKUP_TA = 0.0; // Probably unnecessary
+    // TODO If these are part of robot, talk to Dirk about changing these values to ours
     public static double COAST_MAX_DIST = 26.0;
     public static double COAST_POWER = 0.25;
     public static long COAST_MS = 450;
@@ -178,7 +177,7 @@ public class HiveVision extends LinearOpMode {
 
         if (target != null) {
             double tx = target.getTargetXDegrees();
-            double ty = target.getTargetYDegrees();
+            // double ty = target.getTargetYDegrees(); // Remove after testing since it makes sense that it is not needed for yaw turn
             double ta = target.getTargetArea();
             double estimatedDist = distanceFromTa(ta);
 
@@ -237,7 +236,7 @@ public class HiveVision extends LinearOpMode {
     private LLResultTypes.DetectorResult findTarget() {
         LLResult result = limelight.getLatestResult();
 
-        if (result == null || result.getStaleness() > MAX_STALENESS_US) {
+        if (result == null || result.getStaleness() > MAX_STALENESS_MS) {
             dropStaleLock();
             return null;
         }
