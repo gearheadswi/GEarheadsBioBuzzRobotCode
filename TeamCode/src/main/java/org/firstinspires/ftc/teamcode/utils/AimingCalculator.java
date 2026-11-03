@@ -36,11 +36,13 @@ public class AimingCalculator {
         private final double turretAngle;
         private final double hoodAngle;
         private final double launcherVelocity;
+        private final double distance;
 
-        public TheoreticalLaunchConfiguration(double turretAngle, double hoodAngle, double launcherVelocity) {
+        public TheoreticalLaunchConfiguration(double turretAngle, double hoodAngle, double launcherVelocity, double distance) {
             this.turretAngle = turretAngle;
             this.hoodAngle = hoodAngle;
             this.launcherVelocity = launcherVelocity;
+            this.distance = distance;
         }
 
         public double getLauncherVelocity() {
@@ -53,6 +55,10 @@ public class AimingCalculator {
 
         public double getTurretAngle() {
             return turretAngle;
+        }
+
+        public double getDistance() {
+            return distance;
         }
     }
 
@@ -121,7 +127,8 @@ public class AimingCalculator {
         return new TheoreticalLaunchConfiguration(
                 turretOffset,
                 hoodAngle,
-                velocity
+                velocity,
+                distance
         );
     }
 
@@ -166,7 +173,8 @@ public class AimingCalculator {
         return new TheoreticalLaunchConfiguration(
                 compensatedTurretOffset,
                 compensatedAngle,
-                compensatedVel
+                compensatedVel,
+                distance
         );
     }
 }

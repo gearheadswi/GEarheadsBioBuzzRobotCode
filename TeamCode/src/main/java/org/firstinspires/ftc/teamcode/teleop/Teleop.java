@@ -7,6 +7,7 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.ShotParams;
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -29,7 +30,8 @@ public class Teleop extends OpMode {
     private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
             -90,
             0,
-            1000
+            1000,
+            0
     );
     private Robot robot;
 
@@ -160,12 +162,15 @@ public class Teleop extends OpMode {
         }
 
         // TURRET/AIMING
-        TheoreticalLaunchConfiguration currentConfig = DEFAULT_LAUNCH_CONFIG;
-        if (!aimOverride){
-            currentConfig = AimingCalculator.aimAtTarget(team, robotPose);
+        if (aimOverride){
+            turret.setTurretAimOffset(DEFAULT_LAUNCH_CONFIG.getTurretAngle());
+            launcher.setTargetSpeed(DEFAULT_LAUNCH_CONFIG.getLauncherVelocity());
+        } else {
+            TheoreticalLaunchConfiguration aimingConfig = AimingCalculator.aimAtTarget(team, robotPose);
+            turret.setTurretAimOffset(aimingConfig.getTurretAngle());
+            double launcherSpeed = ShotParams.Velocity.forDistance(aimingConfig.getDistance());
+            launcher.setTargetSpeed(launcherSpeed);
         }
-        turret.setTurretAimOffset(currentConfig.getTurretAngle());
-        launcher.setTargetSpeed(currentConfig.getLauncherVelocity());
 
         // Update stuff
         turret.updateMovement(dt, Math.toDegrees(robotPose.heading()), Math.toDegrees(robotVelocity.omega));
