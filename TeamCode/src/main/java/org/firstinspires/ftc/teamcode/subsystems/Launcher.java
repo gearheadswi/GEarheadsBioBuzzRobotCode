@@ -7,15 +7,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+/**
+ * TODO Hood is not mechanically done yet
+ */
 public class Launcher {
     private final DcMotorEx launchMotor1;
-    private final Servo hoodServo;
+//    private final Servo hoodServo;
     private boolean launching = false;
     private double launchSpeed = 1000;
 
     public Launcher(HardwareMap hardwareMap){
-        launchMotor1 = hardwareMap.get(DcMotorEx.class, "launch1");
-        hoodServo = hardwareMap.get(Servo.class, "hood"); // TODO: correct mapping
+        launchMotor1 = hardwareMap.get(DcMotorEx.class, "launcher");
+//        hoodServo = hardwareMap.get(Servo.class, "hood"); // TODO: correct mapping
 
         launchMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         launchMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -25,7 +28,7 @@ public class Launcher {
     }
 
     private void setMotorSpeed(double speed){
-        launchSpeed = speed;// TODO: is this right cause this line used to not exist.
+        launchSpeed = speed;
         launchMotor1.setVelocity(launchSpeed);
     }
 
@@ -53,8 +56,8 @@ public class Launcher {
         launchSpeed = speed;
     }
 
-    public void setHoodAngle(double angle) {
-        //TODO: convert this to angle
-        hoodServo.setPosition(angle);
-    }
+//    public void setHoodAngle(double angle) {
+//        //TODO: convert this to angle
+//        hoodServo.setPosition(angle);
+//    }
 }

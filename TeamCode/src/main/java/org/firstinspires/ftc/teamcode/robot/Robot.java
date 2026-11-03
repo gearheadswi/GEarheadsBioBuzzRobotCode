@@ -21,6 +21,7 @@ public class Robot {
 
     public IntakeTransfer intake;
     public Turret turret;
+    public Launcher launcher;
 
     public Robot(OpMode opMode, TeamColor team) {
         hardwareMap = opMode.hardwareMap;
@@ -31,6 +32,7 @@ public class Robot {
     public void initSubsystems() {
         intake = new IntakeTransfer(hardwareMap);
         turret = new Turret(hardwareMap);
+        launcher = new Launcher(hardwareMap);
     }
 
     public void intiSequencesTeleop(){
@@ -43,5 +45,6 @@ public class Robot {
         intake.flowerIntakeArmUp();
         intake.activateIntake();
         intake.stopBallRelease();
+        launcher.launchOn();
     }
 }

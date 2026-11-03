@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
 import org.firstinspires.ftc.teamcode.utils.AimingCalculator.TheoreticalLaunchConfiguration;
@@ -19,10 +20,6 @@ import org.firstinspires.ftc.teamcode.utils.TeamColor;
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @TeleOp
 public class Teleop extends OpMode {
@@ -39,6 +36,7 @@ public class Teleop extends OpMode {
     private Follower follower;
     private IntakeTransfer intakeTransfer;
     private Turret turret;
+    private Launcher launcher;
 
     private TeamColor team = TeamColor.RED;
 
@@ -46,9 +44,6 @@ public class Teleop extends OpMode {
     private boolean aimOverride = true;
 
     private long prevTimeStamp = 0;
-
-    // TEMP
-    private DcMotorEx motor;
 
     @Override
     public void init() {
@@ -60,6 +55,7 @@ public class Teleop extends OpMode {
 
         intakeTransfer = robot.intake;
         turret = robot.turret;
+        launcher = robot.launcher;
 
         follower = Constants.create(hardwareMap);
 
@@ -72,12 +68,6 @@ public class Teleop extends OpMode {
             setStartPos();
         }
         printSetTeam();
-
-        // TEMP
-        motor = hardwareMap.get(DcMotorEx.class, "launcher");
-        motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(36, 0, 0, 14));
     }
 
     private void setStartPos(){
@@ -175,8 +165,7 @@ public class Teleop extends OpMode {
             currentConfig = AimingCalculator.aimAtTarget(team, robotPose);
         }
         turret.setTurretAimOffset(currentConfig.getTurretAngle());
-        // TEMP
-        motor.setVelocity(currentConfig.getLauncherVelocity());
+        launcher.setTargetSpeed(currentConfig.getLauncherVelocity());
 
         // Update stuff
         turret.updateMovement(dt, Math.toDegrees(robotPose.heading()), Math.toDegrees(robotVelocity.omega));
