@@ -11,6 +11,9 @@ public class AimingCalculator {
     public static final Pose RED_LEFT = new Pose(52.17, 58);
     public static final Pose RED_RIGHT = new Pose(89.33, 58);
 
+    // X direction (- -> back, + -> front), Y direction (- -> left, + -> right)
+    public static final Pose TURRET_OFFSET = new Pose(0, 0); // TODO Find
+
     public static final double FIELD_WIDTH = 144;
 
     /**
@@ -70,9 +73,14 @@ public class AimingCalculator {
         return inLeftField ? BLUE_LEFT : BLUE_RIGHT;
     }
 
+    public static Pose getTurretCenter(Pose robotPose){
+        Pose turretOffsetRotated = TURRET_OFFSET.toVector2D().rotate(robotPose.heading()).toPose();
+        return robotPose.plus(turretOffsetRotated);
+    }
+
     public static double getTargetDistance(TeamColor team, Pose robotPose) {
         Pose targetPose = getTargetPose(team, robotPose);
-        return robotPose.distance(targetPose);
+        return targetPose.distance(getTurretCenter(robotPose));
     }
 
     /**
@@ -134,9 +142,10 @@ public class AimingCalculator {
 
     public static TheoreticalLaunchConfiguration aimAtTarget(TeamColor team, Pose robotPose, Velocity robotVelocity) {
         Pose target = getTargetPose(team, robotPose);
+        Pose turretCenter = getTurretCenter(robotPose);
         Vector displacement = new Vector (
-                target.x() - robotPose.x(),
-                target.y() - robotPose.y()
+                target.x() - turretCenter.x(),
+                target.y() - turretCenter.y()
         );
         double distance = displacement.magnitude();
 
@@ -157,18 +166,15 @@ public class AimingCalculator {
         double targetVFlat = Math.sqrt( targetVX * targetVX + targetVY * targetVY );
 
         // Angle and velocity compensating
-        double compensatedAngle = Math.atan( targetVZ / targetVFlat );
+        double compensatedAngle = Math.atan2( targetVZ, targetVFlat );
         double compensatedVel = Math.sqrt(
                 targetVX * targetVX +
                 targetVY * targetVY +
                 targetVZ * targetVZ
         );
 
-        Pose compensatedTarget = target.toVector2D().toVector().plus(
-                robotVelocity.toVector().projectOnto(perpindicularDisplacement)
-        ).toVector2D().toPose();
-
-        double compensatedTurretOffset = getAimOffsetFromHeading(robotPose, compensatedTarget);
+        double additionalTurretOffset = Math.atan2(targetVY, targetVX);
+        double compensatedTurretOffset = getAimOffsetFromHeading(robotPose, target) - additionalTurretOffset;
 
         return new TheoreticalLaunchConfiguration(
                 compensatedTurretOffset,
