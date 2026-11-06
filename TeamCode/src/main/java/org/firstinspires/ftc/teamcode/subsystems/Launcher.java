@@ -22,7 +22,7 @@ public class Launcher {
 
         launchMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         launchMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        launchMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        launchMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         setPID(36, 14);
     }
@@ -33,7 +33,7 @@ public class Launcher {
     }
 
     public void setPID(double p, double f){
-        launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_WITHOUT_ENCODER, new PIDFCoefficients(
+        launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
                 p,0,0,f
         ));
     }

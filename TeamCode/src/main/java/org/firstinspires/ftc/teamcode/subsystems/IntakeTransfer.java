@@ -17,7 +17,7 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
 
     private static final double DIGITAL_THRESHOLD = 40; // CM-ish
-    private static final double MAX_CURRENT = 6;
+    private static final double MAX_CURRENT = 8;
 
     private DcMotorEx intakeMotor;
     private DcMotorEx transferMotor;

@@ -30,7 +30,7 @@ public class Teleop extends OpMode {
     private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
             -90,
             0,
-            1000,
+            1500,
             0
     );
     private Robot robot;
@@ -113,6 +113,7 @@ public class Teleop extends OpMode {
     @Override
     public void start() {
         robot.startSequenceTele();
+        prevTimeStamp = System.currentTimeMillis();
     }
 
     @Override
@@ -162,6 +163,9 @@ public class Teleop extends OpMode {
         }
 
         // TURRET/AIMING
+        if(gamepad1.yWasPressed()){
+            aimOverride = !aimOverride;
+        }
         if (aimOverride){
             turret.setTurretAimOffset(DEFAULT_LAUNCH_CONFIG.getTurretAngle());
             launcher.setTargetSpeed(DEFAULT_LAUNCH_CONFIG.getLauncherVelocity());
