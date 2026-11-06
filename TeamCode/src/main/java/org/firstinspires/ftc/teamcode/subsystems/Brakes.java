@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Brakes {
-    private static final double LEFT_BRAKE_DOWN_POS = 0; // TODO tune
-    private static final double LEFT_BRAKE_UP_POS = 0; // TODO tune
+    private static final double LEFT_BRAKE_DOWN_POS = 0.85;
+    private static final double LEFT_BRAKE_UP_POS = 0.55;
 
-    private static final double RIGHT_BRAKE_DOWN_POS = 0; // TODO tune
-    private static final double RIGHT_BRAKE_UP_POS = 0; // TODO tune
+    private static final double RIGHT_BRAKE_DOWN_POS = 0.95;
+    private static final double RIGHT_BRAKE_UP_POS = 0.65;
 
     private Servo leftBrake;
     private Servo rightBrake;
