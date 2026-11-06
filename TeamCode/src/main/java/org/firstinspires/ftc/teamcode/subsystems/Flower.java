@@ -74,9 +74,9 @@ public class Flower {
         double power;
         power = -slidePidf.smooth(targetTicks, ticks) + HOLD_POWER;
         power = Math.max(-EXTEND_POWER, Math.min(EXTEND_POWER, power));
-        if (currentSlidePosition == FlowerSlidePosition.DOWN && ticks > DOWN_POSITION + 50) {
-            power = 0;
-        }
+//        if (currentSlidePosition == FlowerSlidePosition.DOWN && ticks > DOWN_POSITION + 150) {
+//            power = 0;
+//        }
         slideMotor.setPower(power);
     }
 
