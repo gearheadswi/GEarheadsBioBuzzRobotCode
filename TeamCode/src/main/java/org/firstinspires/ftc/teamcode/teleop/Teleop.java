@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.ShotParams;
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.Brakes;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
@@ -24,6 +25,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp
 public class Teleop extends OpMode {
+    private static final double MAX_BRAKE_SPEED = 3; // In/sec
+
     private static final PoseFactory poseFactory = PoseFactory.degrees();
     private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(8, 102.7, 0);
     private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(133.5, 38.6, 180);
@@ -39,6 +42,7 @@ public class Teleop extends OpMode {
     private IntakeTransfer intakeTransfer;
     private Turret turret;
     private Launcher launcher;
+    private Brakes brakes;
 
     private TeamColor team = TeamColor.RED;
 
@@ -58,6 +62,7 @@ public class Teleop extends OpMode {
         intakeTransfer = robot.intake;
         turret = robot.turret;
         launcher = robot.launcher;
+        brakes = robot.brakes;
 
         follower = Constants.create(hardwareMap);
 
@@ -132,6 +137,22 @@ public class Teleop extends OpMode {
                 -gamepad1.right_stick_x * driveForce,
                 follower.pose().heading() + ((team == TeamColor.BLUE) ? Math.PI : 0)
         );
+
+        if(
+                (gamepad1.left_stick_x < 0.05 &&
+                gamepad1.left_stick_y < 0.05 &&
+                gamepad1.right_stick_x < 0.05 &&
+                robotVelocity.toVector().magnitude() < MAX_BRAKE_SPEED)
+                || gamepad1.right_bumper
+        ) {
+            if (!brakes.isBreaking()){
+                brakes.brake();
+            }
+        } else {
+            if (brakes.isBreaking()){
+                brakes.release();
+            }
+        }
 
 //        ManualDrive.driveOrHold(follower, powers);
         follower.manual(powers);

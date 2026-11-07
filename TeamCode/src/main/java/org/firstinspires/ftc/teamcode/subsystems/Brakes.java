@@ -1,0 +1,40 @@
+package org.firstinspires.ftc.teamcode.subsystems;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+public class Brakes {
+    private static final double LEFT_BRAKE_DOWN_POS = 0.85;
+    private static final double LEFT_BRAKE_UP_POS = 0.55;
+
+    private static final double RIGHT_BRAKE_DOWN_POS = 0.95;
+    private static final double RIGHT_BRAKE_UP_POS = 0.65;
+
+    private Servo leftBrake;
+    private Servo rightBrake;
+
+    private boolean breaking;
+
+    public Brakes(HardwareMap hardwareMap){
+        leftBrake = hardwareMap.get(Servo.class, "leftBrake");
+        rightBrake = hardwareMap.get(Servo.class, "rightBrake");
+
+        breaking = false;
+    }
+
+    public void brake(){
+        leftBrake.setPosition(LEFT_BRAKE_DOWN_POS);
+        rightBrake.setPosition(RIGHT_BRAKE_DOWN_POS);
+        breaking = true;
+    }
+
+    public void release(){
+        leftBrake.setPosition(LEFT_BRAKE_UP_POS);
+        rightBrake.setPosition(RIGHT_BRAKE_UP_POS);
+        breaking = false;
+    }
+
+    public boolean isBreaking(){
+        return breaking;
+    }
+}

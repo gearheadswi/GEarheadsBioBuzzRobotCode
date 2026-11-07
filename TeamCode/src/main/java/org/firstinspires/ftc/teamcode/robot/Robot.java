@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.subsystems.Brakes;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
@@ -22,6 +23,7 @@ public class Robot {
     public IntakeTransfer intake;
     public Turret turret;
     public Launcher launcher;
+    public Brakes brakes;
 
     public Robot(OpMode opMode, TeamColor team) {
         hardwareMap = opMode.hardwareMap;
@@ -33,6 +35,7 @@ public class Robot {
         intake = new IntakeTransfer(hardwareMap);
         turret = new Turret(hardwareMap);
         launcher = new Launcher(hardwareMap);
+        brakes = new Brakes(hardwareMap);
     }
 
     public void intiSequencesTeleop(){
@@ -46,5 +49,6 @@ public class Robot {
         intake.activateIntake();
         intake.stopBallRelease();
         launcher.launchOn();
+        brakes.release();
     }
 }
