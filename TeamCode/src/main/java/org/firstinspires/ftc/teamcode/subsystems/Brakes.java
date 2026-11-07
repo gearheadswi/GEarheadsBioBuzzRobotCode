@@ -16,8 +16,8 @@ public class Brakes {
     private boolean breaking;
 
     public Brakes(HardwareMap hardwareMap){
-        leftBrake = hardwareMap.get(Servo.class, "leftBrake");
-        rightBrake = hardwareMap.get(Servo.class, "rightBrake");
+        leftBrake = hardwareMap.get(Servo.class, "brakeLeft");
+        rightBrake = hardwareMap.get(Servo.class, "brakeRight");
 
         breaking = false;
     }

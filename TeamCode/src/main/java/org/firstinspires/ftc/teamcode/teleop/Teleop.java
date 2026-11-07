@@ -206,6 +206,8 @@ public class Teleop extends OpMode {
 
         // Telemetry
         telemetry.addData("Ball count", intakeTransfer.getBallCount());
+        telemetry.addData("Robot Speed (In/sec)", robotVelocity.toVector().magnitude());
+        telemetry.addData("Is Braking?", brakes.isBreaking());
         printPositionInfo();
         telemetry.update();
     }
