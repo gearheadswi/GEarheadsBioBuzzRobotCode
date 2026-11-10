@@ -51,4 +51,12 @@ public class Robot {
         launcher.launchOn();
         brakes.release();
     }
+
+    public void startSequenceAuto(){
+        intake.flowerIntakeArmUp();
+        intake.activateIntake();
+        intake.stopBallRelease();
+        launcher.launchOn();
+        brakes.release();
+    }
 }
