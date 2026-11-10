@@ -28,8 +28,23 @@ public class Teleop extends OpMode {
     private static final double MAX_BRAKE_SPEED = 3; // In/sec
 
     private static final PoseFactory poseFactory = PoseFactory.degrees();
-    private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(8, 102.7, 0);
-    private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(133.5, 38.6, 180);
+    private static final Pose DEFAULT_START_POSE_RED = poseFactory.of(7.1, 102, 270);
+    private static final Pose DEFAULT_START_POSE_BLUE = poseFactory.of(134.4, 39.5, 90);
+
+    private static final Pose RELOCALIZE_RED_POSE_1 = poseFactory.of(57.3, 134.1, 0);
+    private static final Pose RELOCALIZE_RED_POSE_2 = poseFactory.of(36, 134.1, 180);
+    private static final Pose RELOCALIZE_RED_POSE_3 = poseFactory.of(7.1, 57.4, 90);
+    private static final Pose RELOCALIZE_RED_POSE_4 = poseFactory.of(7.1, 35.9, 270);
+
+    private static final Pose RELOCALIZE_BLUE_POSE_1 = poseFactory.mirrorAroundPoint(70.75, 70.75)
+            .of(57.3, 134.1, 0);
+    private static final Pose RELOCALIZE_BLUE_POSE_2 = poseFactory.mirrorAroundPoint(70.75, 70.75)
+            .of(36, 134.1, 180);
+    private static final Pose RELOCALIZE_BLUE_POSE_3 = poseFactory.mirrorAroundPoint(70.75, 70.75)
+            .of(7.1, 57.4, 90);
+    private static final Pose RELOCALIZE_BLUE_POSE_4 = poseFactory.mirrorAroundPoint(70.75, 70.75)
+            .of(7.1, 35.9, 270);
+
     private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
             -90,
             0,
@@ -195,6 +210,24 @@ public class Teleop extends OpMode {
             turret.setTurretAimOffset(aimingConfig.getTurretAngle());
             double launcherSpeed = ShotParams.Velocity.forDistance(aimingConfig.getDistance());
             launcher.setTargetSpeed(launcherSpeed);
+        }
+
+        // RELOCALIZATION POINTS
+        if (gamepad2.dpadUpWasPressed()){
+            Pose newPos = (team == TeamColor.RED) ? RELOCALIZE_RED_POSE_1 : RELOCALIZE_BLUE_POSE_1;
+            follower.setPose(newPos);
+        }
+        if (gamepad2.dpadDownWasPressed()){
+            Pose newPos = (team == TeamColor.RED) ? RELOCALIZE_RED_POSE_2 : RELOCALIZE_BLUE_POSE_2;
+            follower.setPose(newPos);
+        }
+        if (gamepad2.dpadLeftWasPressed()){
+            Pose newPos = (team == TeamColor.RED) ? RELOCALIZE_RED_POSE_3 : RELOCALIZE_BLUE_POSE_3;
+            follower.setPose(newPos);
+        }
+        if (gamepad2.dpadRightWasPressed()){
+            Pose newPos = (team == TeamColor.RED) ? RELOCALIZE_RED_POSE_4 : RELOCALIZE_BLUE_POSE_4;
+            follower.setPose(newPos);
         }
 
         // Update stuff
