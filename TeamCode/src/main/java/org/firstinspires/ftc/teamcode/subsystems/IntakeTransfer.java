@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.CommandBuilder;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -7,6 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.hardware.EncoderBasedCurrentLimitingMotor;
+import static com.pedropathing.ivy.commands.Commands.*;
+import static com.pedropathing.ivy.groups.Groups.*;
 
 public class IntakeTransfer {
     private static final double BLOCKER_CLOSED_POSITION = 0.15;
@@ -16,8 +20,12 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_UP_LEFT = 0;
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
 
+    private static final double AUTO_SHOT_LENGTH = 3; // Seconds
+    private static final double AUTO_BALL_WAIT_TIMEOUT = 8; // Seconds
+
     private static final double DIGITAL_THRESHOLD = 40; // CM-ish
     private static final double MAX_CURRENT = 8;
+    private static final double MAX_CURRENT_SHOOTING = 10;
 
     private DcMotorEx intakeMotor;
     private DcMotorEx transferMotor;
@@ -31,7 +39,9 @@ public class IntakeTransfer {
 
     private int ballCount = 0;
     private boolean isObjectPresent = false;
-    private double targetCurrent = 0;
+    private boolean shooting = false;
+    private boolean on = false;
+    private boolean reversed = false;
 
     /**
      * Initialize hardware for intake/transfer.
@@ -62,29 +72,37 @@ public class IntakeTransfer {
      * Spins motors forward on intake and transfer
      */
     public void activateIntake(){
-        targetCurrent = MAX_CURRENT;
+        on = true;
+        reversed = false;
     }
 
     /**
      * Spins motors reverse on intake and transfer
      */
     public void reverseIntake(){
-        targetCurrent = -MAX_CURRENT;
+        on = true;
+        reversed = true;
     }
 
     /**
      * Stops the intake motor from spinning
      */
     public void disableintake(){
-        intakeMotor.setPower(0);
-        transferMotor.setPower(0);
-        targetCurrent = 0;
+        on = false;
     }
 
     /**
      * Updates the motor to achieve target current.
      */
     public void updateCurrentLimiting(){
+        double targetCurrent = 0;
+        if (on) {
+            if (reversed) {
+                targetCurrent = -(shooting ? MAX_CURRENT_SHOOTING : MAX_CURRENT);
+            } else {
+                targetCurrent = shooting ? MAX_CURRENT_SHOOTING : MAX_CURRENT;
+            }
+        }
         intakeCurrentLimiter.controlCurrent(targetCurrent);
         transferCurrentLimiter.controlCurrent(targetCurrent);
     }
@@ -100,11 +118,11 @@ public class IntakeTransfer {
     public void updateBallCount(){
         boolean isBeamBroken = getCurrentDistance() > DIGITAL_THRESHOLD;
         if (!isObjectPresent && isBeamBroken){
-           if(targetCurrent > 0) {
+           if(!reversed) {
                if (ballCount < 4) {
                    ballCount++;
                }
-           } else if (targetCurrent < 0){
+           } else if (reversed){
                if (ballCount > 0)  {
                    ballCount--;
                }
@@ -132,6 +150,7 @@ public class IntakeTransfer {
     public void startBallRelease(){
         blockerServo.setPosition(BLOCKER_OPEN_POSITION);
         ballCount = 0;
+        shooting = true;
     }
 
     /**
@@ -139,6 +158,7 @@ public class IntakeTransfer {
      */
     public void stopBallRelease(){
         blockerServo.setPosition(BLOCKER_CLOSED_POSITION);
+        shooting = false;
     }
 
     /**
@@ -164,4 +184,23 @@ public class IntakeTransfer {
     public double getCurrentDistance(){
         return (distanceSensor.getVoltage() / 3.3) * 100;
     }
+
+    public Command intakeActivateCommand = instant(this::activateIntake);
+
+    public Command intakeOffCommand = instant(this::disableintake);
+
+    public Command intakeArmDownCommand = instant(this::flowerIntakeArmDown);
+
+    public Command intakeArmUpCommand = instant(this::flowerIntakeArmUp);
+
+    public Command shootCommand = sequential(
+            instant(this::startBallRelease),
+            waitMs(AUTO_SHOT_LENGTH * 1000),
+            instant(this::stopBallRelease)
+    );
+
+    public Command waitUntilFullCommand = deadline(
+            waitMs(AUTO_BALL_WAIT_TIMEOUT * 1000),
+            waitUntil(() -> getBallCount() >= 4)
+    );
 }
