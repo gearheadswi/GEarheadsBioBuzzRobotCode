@@ -6,15 +6,15 @@ import com.pedropathing.math.Velocity;
 
 public class AimingCalculator {
     // Left and right are according to the standard Pedro field orientation. You can look at the field using the pedro pathing visualizer
-    public static final Pose BLUE_LEFT = new Pose(52.17, 83.5);
-    public static final Pose BLUE_RIGHT = new Pose(89.33, 83.5);
-    public static final Pose RED_LEFT = new Pose(52.17, 58);
-    public static final Pose RED_RIGHT = new Pose(89.33, 58);
+    public static final Pose BLUE_LEFT  = new Pose(83.5, 89.33);
+    public static final Pose BLUE_RIGHT = new Pose(83.5, 52.17);
+    public static final Pose RED_LEFT   = new Pose(58, 89.33);
+    public static final Pose RED_RIGHT  = new Pose(58, 52.17);
 
     // X direction (- -> back, + -> front), Y direction (- -> left, + -> right)
     public static final Pose TURRET_OFFSET = new Pose(0, 0); // TODO Find
 
-    public static final double FIELD_WIDTH = 144;
+    public static final double FIELD_WIDTH = 141.5;
 
     /**
      * Y height of the center of the goal in the up position in Inches
