@@ -11,12 +11,22 @@ import org.firstinspires.ftc.teamcode.utils.TeamColor;
  */
 public class CommonPoints {
     public CommonPoints(PoseFactory poseFactory){
-        startParkTowardsLoading = poseFactory.of(0, 0, 0);
-        startParkTowardsGarden = poseFactory.of(0, 0, 0);
+        // TODO
+        startParkTowardsLoading = poseFactory.of(7.2, 130.9, 0);
+        startParkTowardsGarden = poseFactory.of(7.2, 78.4, 90);
+
         startGardenShoot = poseFactory.of(0, 0, 0);
         startLoadingShoot = poseFactory.of(0, 0, 0);
-        parkTowardsLoading = poseFactory.of(0, 0, 0);
-        parkTowardsGarden = poseFactory.of(0, 0, 0);
+        // TODO
+
+        parkTowardsLoading = poseFactory.of(11, 118.7, 270);
+        parkTowardsGarden = poseFactory.of(10.8, 95.4, 90);
+
+        flowerPickupLoading= poseFactory.of(46.8, 129.4, 90);
+        flowerPickupGarden= poseFactory.of(13.7, 46.4, 180);
+
+        frontHiveShotLoading= poseFactory.of(58.3, 117.6, 0);
+        frontHiveShotGarden= poseFactory.of(58.3, 22.4, 180);
     }
 
     // Parking start positions
@@ -30,4 +40,12 @@ public class CommonPoints {
     // Park positions
     public Pose parkTowardsLoading;
     public Pose parkTowardsGarden;
+
+    // Flower Pickup
+    public Pose flowerPickupLoading;
+    public Pose flowerPickupGarden;
+
+    // Front of Hive shooting spots
+    public Pose frontHiveShotLoading;
+    public Pose frontHiveShotGarden;
 }

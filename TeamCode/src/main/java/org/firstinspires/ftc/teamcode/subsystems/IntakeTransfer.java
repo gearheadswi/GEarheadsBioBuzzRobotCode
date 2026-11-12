@@ -13,8 +13,8 @@ import static com.pedropathing.ivy.commands.Commands.*;
 import static com.pedropathing.ivy.groups.Groups.*;
 
 public class IntakeTransfer {
-    private static final double BLOCKER_CLOSED_POSITION = 0.15;
-    private static final double BLOCKER_OPEN_POSITION = 0.7;
+    private static final double BLOCKER_CLOSED_POSITION = 0.37;
+    private static final double BLOCKER_OPEN_POSITION = 0.6;
     private static final double FLOWER_RAMP_DOWN_LEFT = 0.975;
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0;
     private static final double FLOWER_RAMP_UP_LEFT = 0;

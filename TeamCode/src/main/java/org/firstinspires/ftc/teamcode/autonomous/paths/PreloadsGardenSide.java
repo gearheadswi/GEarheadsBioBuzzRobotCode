@@ -4,7 +4,6 @@ import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
-import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import static com.pedropathing.api.Paths.*;
@@ -13,6 +12,7 @@ import com.pedropathing.paths.Path;
 import static com.pedropathing.ivy.groups.Groups.*;
 import static com.pedropathing.ivy.pedro.PedroCommands.*;
 
+import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.CommonPoints;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
-@Autonomous(name = "Preloads Garden Side")
-public class Example extends OpMode {
+@Autonomous(name = "2 Preloads Garden Side")
+public class PreloadsGardenSide extends OpMode {
     private PoseFactory poseFactory = PoseFactory.degrees();
     private Follower follower;
     private TeamColor team = TeamColor.RED;
@@ -42,7 +42,13 @@ public class Example extends OpMode {
     @Override
     public void init() {
         follower = Constants.create(hardwareMap);
-        follower.setPose(poseFactory.of(0, 0, 0));
+
+        robot.initSubsystems();
+        intakeTransfer = robot.intake;
+        turret = robot.turret;
+        launcher = robot.launcher;
+        brakes = robot.brakes;
+
         buildSequence();
         buildPaths();
         printSetTeam();
@@ -97,5 +103,12 @@ public class Example extends OpMode {
     public void loop() {
         follower.update();
         Scheduler.execute();
+    }
+
+    @Override
+    public void stop() {
+        ValueStorage.fromAuto = true;
+        ValueStorage.auto_pose = follower.pose();
+        ValueStorage.autoTeam = team;
     }
 }

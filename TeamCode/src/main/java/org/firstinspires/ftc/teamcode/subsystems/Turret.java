@@ -49,7 +49,11 @@ public class Turret {
      * @return rotation (degrees)
      */
     public double getAbsolutePosition(){
-        return ((360 - (-absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 3600) % 360) * 0.9688 - 1.53 + 360) % 360;
+        double angle = ((((360 - (-absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 3600) % 360) * 0.9688 - 1.53 + 360) % 360) - 158 + 360) % 360;
+        if (angle > 45) {
+            return angle - 360;
+        }
+        return angle;
     }
 
     private void setServoPower(double power){
@@ -76,10 +80,7 @@ public class Turret {
                 calibrating = false;
             }
         } else {
-            double offsettedAngle = (currentRotation+ 90) % 360;
-            if (offsettedAngle > 90){
-                offsettedAngle -= 360;
-            }
+            double offsettedAngle = currentRotation;
             double power = turretController.update(dt, offsettedAngle, turretVelocity, robotHeading, robotRotationalVelocity);
             setServoPower(power);
         }
@@ -103,10 +104,7 @@ public class Turret {
      * @param angleOffset of turret
      */
     public void setTurretAimOffset(double angleOffset) {
-        double offsettedAngle = (angleOffset + 90) % 360;
-        if (offsettedAngle > 90){
-            offsettedAngle -= 360;
-        }
+        double offsettedAngle = angleOffset;
         turretController.setRobotRelativeTargetDeg(offsettedAngle);
     }
 

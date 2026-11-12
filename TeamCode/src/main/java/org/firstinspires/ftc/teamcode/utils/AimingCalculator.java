@@ -56,8 +56,16 @@ public class AimingCalculator {
             return hoodAngle;
         }
 
+        /**
+         * Returns theoretical turret angle
+         * @return degrees -180 to 180
+         */
         public double getTurretAngle() {
-            return turretAngle;
+            double normaAngle = (Math.toDegrees(turretAngle) + 3600) % 360;
+            if (normaAngle > 25) {
+                return normaAngle - 360;
+            }
+            return normaAngle;
         }
 
         public double getDistance() {
@@ -66,7 +74,7 @@ public class AimingCalculator {
     }
 
     public static Pose getTargetPose(TeamColor team, Pose robotPose){
-        boolean inLeftField = robotPose.x() < FIELD_WIDTH / 2;
+        boolean inLeftField = robotPose.y() < FIELD_WIDTH / 2;
         if (team == TeamColor.RED) {
             return inLeftField ? RED_LEFT : RED_RIGHT;
         }
@@ -87,7 +95,7 @@ public class AimingCalculator {
      * Returns the offset from the heading of the robot that will aim towards the goal.
      * @param robotPose Units: (Inches, Radians)
      * @param target Position of target
-     * @return Angle offset from robot heading (Radians)
+     * @return Angle offset from robot heading (Radians) normalized to 0 to 2PI
      * positive -> Right of robot heading
      * negative -> Left of robot heading
      */
@@ -97,7 +105,9 @@ public class AimingCalculator {
                 target.x() - robotPose.x()
         );
 
-        return robotPose.heading() - targetAngleFieldSpace;
+        double angleDif = targetAngleFieldSpace - robotPose.heading();
+        double angleNorm = (angleDif + Math.PI * 1000) % (Math.PI * 2);
+        return angleNorm;
     }
 
     /**

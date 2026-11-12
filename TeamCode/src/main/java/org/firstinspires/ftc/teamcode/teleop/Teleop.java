@@ -46,7 +46,7 @@ public class Teleop extends OpMode {
             .of(7.1, 35.9, 270);
 
     private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
-            -90,
+            -Math.PI / 2,
             0,
             1500,
             0
@@ -154,11 +154,7 @@ public class Teleop extends OpMode {
         );
 
         if(
-                (gamepad1.left_stick_x < 0.05 &&
-                gamepad1.left_stick_y < 0.05 &&
-                gamepad1.right_stick_x < 0.05 &&
-                robotVelocity.toVector().magnitude() < MAX_BRAKE_SPEED)
-                || gamepad1.right_bumper
+            gamepad1.right_bumper
         ) {
             if (!brakes.isBreaking()){
                 brakes.brake();
@@ -199,7 +195,7 @@ public class Teleop extends OpMode {
         }
 
         // TURRET/AIMING
-        if(gamepad1.yWasPressed()){
+        if(gamepad2.yWasPressed()){
             aimOverride = !aimOverride;
         }
         if (aimOverride){
@@ -207,9 +203,11 @@ public class Teleop extends OpMode {
             launcher.setTargetSpeed(DEFAULT_LAUNCH_CONFIG.getLauncherVelocity());
         } else {
             TheoreticalLaunchConfiguration aimingConfig = AimingCalculator.aimAtTarget(team, robotPose);
-            turret.setTurretAimOffset(aimingConfig.getTurretAngle());
+            double turretAngle = aimingConfig.getTurretAngle();
+            turret.setTurretAimOffset(turretAngle);
             double launcherSpeed = ShotParams.Velocity.forDistance(aimingConfig.getDistance());
             launcher.setTargetSpeed(launcherSpeed);
+            telemetry.addData("Turret target", turretAngle);
         }
 
         // RELOCALIZATION POINTS
