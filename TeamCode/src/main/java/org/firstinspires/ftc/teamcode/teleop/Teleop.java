@@ -62,7 +62,7 @@ public class Teleop extends OpMode {
     private TeamColor team = TeamColor.RED;
 
     private boolean grabbingFlower = false;
-    private boolean aimOverride = true;
+    private boolean aimOverride = false;
 
     private long prevTimeStamp = 0;
 
@@ -169,7 +169,7 @@ public class Teleop extends OpMode {
         follower.manual(powers);
 
         if (gamepad1.psWasPressed()){
-            follower.setHeading(team == TeamColor.RED ? DEFAULT_START_POSE_RED.heading() : DEFAULT_START_POSE_BLUE.heading());
+            follower.setHeading(team == TeamColor.RED ? 0 : Math.PI);
         }
 
         // INTAKE/TRANSFER

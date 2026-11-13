@@ -6,13 +6,13 @@ import com.pedropathing.math.Velocity;
 
 public class AimingCalculator {
     // Left and right are according to the standard Pedro field orientation. You can look at the field using the pedro pathing visualizer
-    public static final Pose BLUE_LEFT  = new Pose(83.5, 89.33);
-    public static final Pose BLUE_RIGHT = new Pose(83.5, 52.17);
-    public static final Pose RED_LEFT   = new Pose(58, 89.33);
-    public static final Pose RED_RIGHT  = new Pose(58, 52.17);
+    public static final Pose BLUE_GARDEN  = new Pose(83.5, 89.33);
+    public static final Pose BLUE_LOADING = new Pose(83.5, 52.17);
+    public static final Pose RED_GARDEN = new Pose(58, 52.17);
+    public static final Pose RED_LOADING = new Pose(58, 89.33);
 
     // X direction (- -> back, + -> front), Y direction (- -> left, + -> right)
-    public static final Pose TURRET_OFFSET = new Pose(0, 0); // TODO Find
+    public static final Pose TURRET_OFFSET = new Pose(-4.6063, 0);
 
     public static final double FIELD_WIDTH = 141.5;
 
@@ -74,11 +74,11 @@ public class AimingCalculator {
     }
 
     public static Pose getTargetPose(TeamColor team, Pose robotPose){
-        boolean inLeftField = robotPose.y() < FIELD_WIDTH / 2;
+        boolean inTopHalf = robotPose.y() > FIELD_WIDTH / 2;
         if (team == TeamColor.RED) {
-            return inLeftField ? RED_LEFT : RED_RIGHT;
+            return inTopHalf ? RED_LOADING : RED_GARDEN;
         }
-        return inLeftField ? BLUE_LEFT : BLUE_RIGHT;
+        return inTopHalf ? BLUE_GARDEN : BLUE_LOADING;
     }
 
     public static Pose getTurretCenter(Pose robotPose){
@@ -136,11 +136,12 @@ public class AimingCalculator {
 
     public static TheoreticalLaunchConfiguration aimAtTarget(TeamColor team, Pose robotPose) {
         Pose target = getTargetPose(team, robotPose);
-        double distance = getTargetDistance(team, robotPose);
+        Pose turretCenter = getTurretCenter(robotPose);
+        double distance = getTargetDistance(team, turretCenter);
 
         double hoodAngle = getHoodAngle(distance);
         double velocity = getTargetSpeed(hoodAngle, distance);
-        double turretOffset = getAimOffsetFromHeading(robotPose, target);
+        double turretOffset = getAimOffsetFromHeading(turretCenter, target);
 
         return new TheoreticalLaunchConfiguration(
                 turretOffset,
