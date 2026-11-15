@@ -30,7 +30,8 @@ public class LauncherTest extends LinearOpMode {
         double hoodAngle = 0.5;
 
         waitForStart();
-        intake.startBallRelease();
+        intake.flapDown();
+        intake.stopBallRelease();
         intake.activateIntake();
         while (opModeIsActive()) {
             if (gamepad1.dpadLeftWasPressed()) {
@@ -44,6 +45,25 @@ public class LauncherTest extends LinearOpMode {
             }
             if (gamepad1.dpadDownWasPressed() && hoodAngle - 0.1 >= 0.0) {
                 hoodAngle -= 0.1;
+            }
+
+            if (gamepad1.rightTriggerWasReleased()) {
+                intake.reverseIntake();
+            } else if (gamepad1.rightTriggerWasReleased()) {
+                intake.activateIntake();
+            }
+
+            if (gamepad1.aWasPressed()) {
+                intake.flapUp();
+            }
+            if (gamepad1.bWasPressed()) {
+                intake.flapDown();
+            }
+            if (gamepad1.xWasPressed()) {
+                intake.stopBallRelease();
+            }
+            if (gamepad1.yWasPressed()) {
+                intake.startBallRelease();
             }
 
 //            hoodServo.setPosition(hoodAngle);

@@ -50,6 +50,7 @@ public class Robot {
         intake.stopBallRelease();
         launcher.launchOn();
         brakes.release();
+        intake.flapDown();
     }
 
     public void startSequenceAuto(){
@@ -58,5 +59,6 @@ public class Robot {
         intake.stopBallRelease();
         launcher.launchOn();
         brakes.release();
+        intake.flapDown();
     }
 }

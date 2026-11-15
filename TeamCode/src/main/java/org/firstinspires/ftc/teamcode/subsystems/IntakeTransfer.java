@@ -20,6 +20,9 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_UP_LEFT = 0;
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
 
+    private static final double FLAP_UP = 0.9;
+    private static final double FLAP_DOWN = 0.75;
+
     private static final double AUTO_SHOT_LENGTH = 3; // Seconds
     private static final double AUTO_BALL_WAIT_TIMEOUT = 8; // Seconds
 
@@ -29,6 +32,7 @@ public class IntakeTransfer {
 
     private DcMotorEx intakeMotor;
     private DcMotorEx transferMotor;
+    private Servo flipperServo;
     private Servo blockerServo;
     private Servo flowerServoLeft;
     private Servo flowerServoRight;
@@ -60,6 +64,8 @@ public class IntakeTransfer {
 
         flowerServoLeft = hardwareMap.get(Servo.class, "leftRamp");
         flowerServoRight = hardwareMap.get(Servo.class, "rightRamp");
+
+        flipperServo = hardwareMap.get(Servo.class, "flipper");
 
         // Initializing hardware from hardware map
 
@@ -104,7 +110,14 @@ public class IntakeTransfer {
             }
         }
         intakeCurrentLimiter.controlCurrent(targetCurrent);
-        transferCurrentLimiter.controlCurrent(targetCurrent);
+//        transferCurrentLimiter.controlCurrent(targetCurrent);
+        if (targetCurrent > 0) {
+            transferMotor.setPower(0.65);
+        } else if (targetCurrent < 0) {
+            transferMotor.setPower(-0.75);
+        } else {
+            transferMotor.setPower(0);
+        }
     }
 
     /**
@@ -177,6 +190,14 @@ public class IntakeTransfer {
         flowerServoRight.setPosition(FLOWER_RAMP_DOWN_RIGHT);
     }
 
+    public void flapUp(){
+        flipperServo.setPosition(FLAP_UP);
+    }
+
+    public void flapDown(){
+        flipperServo.setPosition(FLAP_DOWN);
+    }
+
     /**
      * Gets the current distance detected by the distance sensor
      * @return distance (CM)
@@ -202,5 +223,25 @@ public class IntakeTransfer {
     public Command waitUntilFullCommand = deadline(
             waitMs(AUTO_BALL_WAIT_TIMEOUT * 1000),
             waitUntil(() -> getBallCount() >= 4)
+    );
+
+    public Command flapCommand = sequential(
+            instant(this::flapUp),
+            waitMs(500),
+            instant(this::flapDown),
+            waitMs(500)
+    );
+
+    public Command fullAssistedShot = sequential(
+            instant(this::startBallRelease),
+            repeat(flapCommand, 4),
+            instant(this::stopBallRelease)
+    );
+
+    public Command helpingShot = sequential(
+            instant(this::startBallRelease),
+            waitMs(2000),
+            flapCommand,
+            instant(this::stopBallRelease)
     );
 }
