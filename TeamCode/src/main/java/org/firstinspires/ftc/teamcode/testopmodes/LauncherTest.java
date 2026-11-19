@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.testopmodes;
 
+import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -66,6 +67,13 @@ public class LauncherTest extends LinearOpMode {
                 intake.startBallRelease();
             }
 
+            if (gamepad1.rightBumperWasPressed()) {
+                Scheduler.schedule(intake.fullAssistedShot);
+            }
+            if (gamepad1.leftBumperWasPressed()) {
+                Scheduler.schedule(intake.helpingShot);
+            }
+
 //            hoodServo.setPosition(hoodAngle);
             launchMotor1.setVelocity(launcherSpeed);
             intake.updateCurrentLimiting();
@@ -74,6 +82,7 @@ public class LauncherTest extends LinearOpMode {
             // TODO: Figure scaling between angle and servo values
             telemetry.addData("Hood Angle: ", hoodAngle);
             telemetry.update();
+            Scheduler.execute();
         }
     }
 }

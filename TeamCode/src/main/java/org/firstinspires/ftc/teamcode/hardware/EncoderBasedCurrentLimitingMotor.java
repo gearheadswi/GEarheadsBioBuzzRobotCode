@@ -14,7 +14,7 @@ public class EncoderBasedCurrentLimitingMotor {
             (12 - 0.25 * MOTOR_RESISTANCE)
                     / (5800 * 2 * Math.PI / 60);
     public static final double TICKS_PER_REV = 28;
-    public static final double MAX_VOLTAGE = 13;
+    public static final double MAX_VOLTAGE = 9;
 
     private DcMotorEx motor;
     private VoltageSensor voltageSensor;

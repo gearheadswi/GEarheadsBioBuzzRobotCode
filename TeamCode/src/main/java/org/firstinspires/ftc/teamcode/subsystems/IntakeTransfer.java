@@ -20,14 +20,14 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_UP_LEFT = 0;
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
 
-    private static final double FLAP_UP = 0.9;
-    private static final double FLAP_DOWN = 0.75;
+    private static final double FLAP_UP = 0.8;
+    private static final double FLAP_DOWN = 0.425;
 
     private static final double AUTO_SHOT_LENGTH = 3; // Seconds
     private static final double AUTO_BALL_WAIT_TIMEOUT = 8; // Seconds
 
     private static final double DIGITAL_THRESHOLD = 40; // CM-ish
-    private static final double MAX_CURRENT = 8;
+    private static final double MAX_CURRENT = 7.5;
     private static final double MAX_CURRENT_SHOOTING = 10;
 
     private DcMotorEx intakeMotor;
@@ -109,15 +109,18 @@ public class IntakeTransfer {
                 targetCurrent = shooting ? MAX_CURRENT_SHOOTING : MAX_CURRENT;
             }
         }
-        intakeCurrentLimiter.controlCurrent(targetCurrent);
-//        transferCurrentLimiter.controlCurrent(targetCurrent);
-        if (targetCurrent > 0) {
-            transferMotor.setPower(0.65);
-        } else if (targetCurrent < 0) {
-            transferMotor.setPower(-0.75);
-        } else {
-            transferMotor.setPower(0);
-        }
+        intakeCurrentLimiter.controlCurrent(Math.signum(targetCurrent) * 6);
+        transferCurrentLimiter.controlCurrent(Math.signum(targetCurrent) * 6);
+//        if (targetCurrent > 0) {
+//            transferMotor.setPower(1);
+//            intakeMotor.setPower(1);
+//        } else if (targetCurrent < 0) {
+//            transferMotor.setPower(-1);
+//            intakeMotor.setPower(-1);
+//        } else {
+//            transferMotor.setPower(0);
+//            intakeMotor.setPower(0);
+//        }
     }
 
     /**
@@ -198,6 +201,10 @@ public class IntakeTransfer {
         flipperServo.setPosition(FLAP_DOWN);
     }
 
+    public void quarterFlap(){
+        flipperServo.setPosition((FLAP_UP - FLAP_DOWN) / 4 + FLAP_DOWN);
+    }
+
     /**
      * Gets the current distance detected by the distance sensor
      * @return distance (CM)
@@ -227,9 +234,16 @@ public class IntakeTransfer {
 
     public Command flapCommand = sequential(
             instant(this::flapUp),
-            waitMs(500),
+            waitMs(250),
             instant(this::flapDown),
-            waitMs(500)
+            waitMs(350)
+    );
+
+    public Command halfFlapCommand = sequential(
+            instant(this::quarterFlap),
+            waitMs(250),
+            instant(this::flapDown),
+            waitMs(250)
     );
 
     public Command fullAssistedShot = sequential(
@@ -240,7 +254,7 @@ public class IntakeTransfer {
 
     public Command helpingShot = sequential(
             instant(this::startBallRelease),
-            waitMs(2000),
+            repeat(halfFlapCommand, 3),
             flapCommand,
             instant(this::stopBallRelease)
     );
