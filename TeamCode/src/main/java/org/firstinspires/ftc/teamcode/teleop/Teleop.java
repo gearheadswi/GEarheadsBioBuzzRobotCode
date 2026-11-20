@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
 import org.firstinspires.ftc.teamcode.utils.AimingCalculator.TheoreticalLaunchConfiguration;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
+import org.firstinspires.ftc.teamcode.utils.control.TurretPIDF;
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.ManualDrive;
@@ -48,7 +49,7 @@ public class Teleop extends OpMode {
     private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
             -Math.PI / 2,
             0,
-            1500,
+            1710,
             0
     );
     private Robot robot;
@@ -188,10 +189,8 @@ public class Teleop extends OpMode {
             }
         }
 
-        if (gamepad2.rightTriggerWasPressed()){
-            intakeTransfer.startBallRelease();
-        } else if (gamepad2.rightTriggerWasReleased()) {
-            intakeTransfer.stopBallRelease();
+        if (gamepad2.rightBumperWasPressed()) {
+            Scheduler.schedule(intakeTransfer.fullAssistedShot);
         }
 
         // TURRET/AIMING
@@ -200,13 +199,21 @@ public class Teleop extends OpMode {
         }
         if (aimOverride){
             turret.setTurretAimOffset(DEFAULT_LAUNCH_CONFIG.getTurretAngle());
-            launcher.setTargetSpeed(DEFAULT_LAUNCH_CONFIG.getLauncherVelocity());
+            if (!gamepad2.right_trigger_pressed) {
+                launcher.setTargetSpeed(900);
+            } else {
+                launcher.setTargetSpeed(DEFAULT_LAUNCH_CONFIG.getLauncherVelocity());
+            }
         } else {
             TheoreticalLaunchConfiguration aimingConfig = AimingCalculator.aimAtTarget(team, robotPose);
             double turretAngle = aimingConfig.getTurretAngle();
             turret.setTurretAimOffset(turretAngle);
             double launcherSpeed = ShotParams.Velocity.forDistance(aimingConfig.getDistance());
-            launcher.setTargetSpeed(launcherSpeed);
+            if (!gamepad2.right_trigger_pressed) {
+                launcher.setTargetSpeed(900);
+            } else {
+                launcher.setTargetSpeed(launcherSpeed);
+            }
             telemetry.addData("Turret target", turretAngle);
         }
 
@@ -227,6 +234,22 @@ public class Teleop extends OpMode {
             Pose newPos = (team == TeamColor.RED) ? RELOCALIZE_RED_POSE_4 : RELOCALIZE_BLUE_POSE_4;
             follower.setPose(newPos);
         }
+
+//        if (gamepad1.dpadUpWasPressed()){
+//            TurretPIDF.p += 0.001;
+//        }
+//        if (gamepad1.dpadDownWasPressed()){
+//            TurretPIDF.p -= 0.001;
+//        }
+//        if (gamepad1.dpadRightWasPressed()){
+//            TurretPIDF.d += 0.0001;
+//        }
+//        if (gamepad1.dpadLeftWasPressed()){
+//            TurretPIDF.d -= 0.0001;
+//        }
+//
+//        telemetry.addData("kP (Down Up)", TurretPIDF.p);
+//        telemetry.addData("kD (Left Right)", TurretPIDF.d);
 
         // Update stuff
         turret.updateMovement(dt, Math.toDegrees(robotPose.heading()), Math.toDegrees(robotVelocity.omega));

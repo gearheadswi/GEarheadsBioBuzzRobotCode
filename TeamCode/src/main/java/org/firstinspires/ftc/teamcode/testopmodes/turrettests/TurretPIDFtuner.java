@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.utils.control.TurretPIDF;
 import org.firstinspires.ftc.teamcode.utils.control.TurretProfileController;
 
 @TeleOp(name = "Turret PIDF tuner", group = "turret")
@@ -43,28 +44,28 @@ public class TurretPIDFtuner extends LinearOpMode {
                 stepIndex = (stepIndex + 1) % stepSizes.length;
             }
             if (gamepad2.dpadUpWasPressed()){
-                TurretProfileController.kP += stepSizes[stepIndex];
+                TurretPIDF.p += stepSizes[stepIndex];
             }
             if (gamepad2.dpadDownWasPressed()){
-                TurretProfileController.kP -= stepSizes[stepIndex];
+                TurretPIDF.p -= stepSizes[stepIndex];
             }
             if (gamepad2.dpadRightWasPressed()){
-                TurretProfileController.kD += stepSizes[stepIndex];
+                TurretPIDF.d += stepSizes[stepIndex];
             }
             if (gamepad2.dpadLeftWasPressed()){
-                TurretProfileController.kD -= stepSizes[stepIndex];
+                TurretPIDF.d -= stepSizes[stepIndex];
             }
             if (gamepad2.aWasPressed()){
-                TurretProfileController.kS += stepSizes[stepIndex];
+                TurretPIDF.kS += stepSizes[stepIndex];
             }
             if (gamepad2.backWasPressed()){
-                TurretProfileController.kS -= stepSizes[stepIndex];
+                TurretPIDF.kS -= stepSizes[stepIndex];
             }
             if (gamepad2.xWasPressed()){
-                TurretProfileController.kV += stepSizes[stepIndex];
+                TurretPIDF.kV += stepSizes[stepIndex];
             }
             if (gamepad2.yWasPressed()){
-                TurretProfileController.kV -= stepSizes[stepIndex];
+                TurretPIDF.kV -= stepSizes[stepIndex];
             }
 
             turret.setTurretAimOffset(targetDeg);
@@ -75,12 +76,12 @@ public class TurretPIDFtuner extends LinearOpMode {
                     0
             );
 
-            telemetry.addData("kP (Down Up)", TurretProfileController.kP);
-            telemetry.addData("kD (Left Right)", TurretProfileController.kD);
-            telemetry.addData("kS (A B)", TurretProfileController.kS);
-            telemetry.addData("kV (X Y)", TurretProfileController.kV);
+            telemetry.addData("kP (Down Up)", TurretPIDF.p);
+            telemetry.addData("kD (Left Right)", TurretPIDF.d);
+            telemetry.addData("kS (A B)", TurretPIDF.kS);
+            telemetry.addData("kV (X Y)", TurretPIDF.kV);
             telemetry.addData("Target Angle", targetDeg);
-            telemetry.addData("Error", targetDeg - turret.getAbsolutePosition());
+            telemetry.addData("Error", TurretPIDF.angle_difference(targetDeg, turret.getAbsolutePosition()));
             telemetry.addLine();
             telemetry.addData("Absolute", turret.getAbsolutePosition());
             telemetry.addData("Calibrating", turret.isCalibrating());

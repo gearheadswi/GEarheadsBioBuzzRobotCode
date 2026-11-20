@@ -13,13 +13,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.utils.AimingCalculator;
 import org.firstinspires.ftc.teamcode.utils.control.PIDF;
+import org.firstinspires.ftc.teamcode.utils.control.TurretPIDF;
 import org.firstinspires.ftc.teamcode.utils.control.TurretProfileController;
 
 public class Turret {
     private static final double CALIBRATING_POWER = 0.4;
     private static final double CALIBRATION_DELAY = 0.5; // Seconds
     private static final double CALIBRATION_MIN_VEL = 0.0001; // Deg per second
-    private static double ABSOLUTE_ENCODER_OFFSET = -303.4; // Degrees
+    private static double ABSOLUTE_ENCODER_OFFSET = -104; // Degrees
 
     private final CRServo powerServo1;
     private final CRServo powerServo2;
@@ -27,9 +28,12 @@ public class Turret {
     private final AnalogInput absoluteEncoder;
 
     private TurretProfileController turretController;
+    private TurretPIDF pidf;
 
     private boolean calibrating = false;
     private double calibrationStart;
+
+    private double targetAngle;
 
     private double prevAbsolutePosition;
 
@@ -42,6 +46,7 @@ public class Turret {
         absoluteEncoder = hardwareMap.get(AnalogInput.class, "turretEncoder");
 
         turretController = new TurretProfileController();
+        pidf = new TurretPIDF(0.011, 0, 0.0007, 0);
     }
 
     /**
@@ -49,10 +54,11 @@ public class Turret {
      * @return rotation (degrees)
      */
     public double getAbsolutePosition(){
-        double angle = ((((360 - (-absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 3600) % 360) * 0.9688 - 1.53 + 360) % 360) - 158 + 360) % 360;
-        if (angle > 45) {
-            return angle - 360;
-        }
+//        double angle = ((((((360 - (-absoluteEncoder.getVoltage() / 3.2 * 360 + ABSOLUTE_ENCODER_OFFSET + 3600) % 360) * 0.9688 - 1.53 + 360) % 360) - 158 + 360) % 360) + 111.36 + 360) % 360;
+        double angle = (absoluteEncoder.getVoltage() / 3.2 * 360 * 360 / 366 - 1.32) * 360 / (360 - 1.32) + ABSOLUTE_ENCODER_OFFSET;
+//        if (angle > 45) {
+//            return angle - 360;
+//        }
         return angle;
     }
 
@@ -80,8 +86,8 @@ public class Turret {
                 calibrating = false;
             }
         } else {
-            double offsettedAngle = currentRotation;
-            double power = turretController.update(dt, offsettedAngle, turretVelocity, robotHeading, robotRotationalVelocity);
+//            double power = turretController.update(dt, offsettedAngle, turretVelocity, robotHeading, robotRotationalVelocity);
+            double power = pidf.smoothAngle(targetAngle, currentRotation);
             setServoPower(power);
         }
     }
@@ -104,8 +110,8 @@ public class Turret {
      * @param angleOffset of turret
      */
     public void setTurretAimOffset(double angleOffset) {
-        double offsettedAngle = angleOffset;
-        turretController.setRobotRelativeTargetDeg(offsettedAngle);
+        turretController.setRobotRelativeTargetDeg(angleOffset);
+        targetAngle = angleOffset;
     }
 
     // Ivy

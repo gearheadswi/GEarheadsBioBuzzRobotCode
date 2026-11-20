@@ -43,6 +43,8 @@ public class ParksGardenSide extends OpMode {
     public void init() {
         follower = Constants.create(hardwareMap);
 
+        robot = new Robot(this, team);
+
         robot.initSubsystems();
         intakeTransfer = robot.intake;
         turret = robot.turret;
@@ -84,9 +86,10 @@ public class ParksGardenSide extends OpMode {
     }
 
     private void buildPaths(){
-        follower.setPose(commonPoints.startGardenShoot);
+        follower.setPose(commonPoints.startParkTowardsGarden);
         commonPoints = new CommonPoints(poseFactory);
         toPark = curve(commonPoints.startParkTowardsGarden,
+                    poseFactory.of(20,92, 0),
                     commonPoints.parkTowardsGarden)
                 .linear(commonPoints.startParkTowardsGarden, commonPoints.parkTowardsGarden);
     }
@@ -94,7 +97,8 @@ public class ParksGardenSide extends OpMode {
     @Override
     public void start(){
         robot.startSequenceAuto();
-        autoSequence.execute();
+        buildPaths();
+        Scheduler.schedule(autoSequence);
     }
 
     @Override

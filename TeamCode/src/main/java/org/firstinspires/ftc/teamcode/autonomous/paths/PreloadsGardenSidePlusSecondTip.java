@@ -50,6 +50,8 @@ public class PreloadsGardenSidePlusSecondTip extends OpMode {
     public void init() {
         follower = Constants.create(hardwareMap);
 
+        robot = new Robot(this, team);
+
         robot.initSubsystems();
         intakeTransfer = robot.intake;
         turret = robot.turret;
@@ -133,7 +135,7 @@ public class PreloadsGardenSidePlusSecondTip extends OpMode {
     @Override
     public void start(){
         robot.startSequenceAuto();
-        autoSequence.execute();
+        Scheduler.schedule(autoSequence);
     }
 
     @Override

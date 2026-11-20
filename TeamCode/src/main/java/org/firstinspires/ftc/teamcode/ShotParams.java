@@ -23,8 +23,11 @@ public final class ShotParams {
     }
 
     static {
-        TABLE.put(20.0, new ShotEntry(20, 0.50, 1620));
-        TABLE.put(25.0, new ShotEntry(25, 0.50, 1700));
+        TABLE.put(0.0, new ShotEntry(0, 0.50, 1620));
+        TABLE.put(43.0, new ShotEntry(43.0, 0.50, 1620));
+        TABLE.put(45.5, new ShotEntry(45.5, 0.50, 1630));
+        TABLE.put(57.5, new ShotEntry(57.5, 0.50, 1660));
+        TABLE.put(1000.0, new ShotEntry(1000, 0.50, 1660));
     }
 
     public static final class Velocity {

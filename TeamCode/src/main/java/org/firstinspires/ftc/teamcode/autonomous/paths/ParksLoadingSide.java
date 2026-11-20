@@ -43,6 +43,8 @@ public class ParksLoadingSide extends OpMode {
     public void init() {
         follower = Constants.create(hardwareMap);
 
+        robot = new Robot(this, team);
+
         robot.initSubsystems();
         intakeTransfer = robot.intake;
         turret = robot.turret;
@@ -84,9 +86,10 @@ public class ParksLoadingSide extends OpMode {
     }
 
     private void buildPaths(){
-        follower.setPose(commonPoints.startGardenShoot);
+        follower.setPose(commonPoints.startParkTowardsLoading);
         commonPoints = new CommonPoints(poseFactory);
         toPark = curve(commonPoints.startParkTowardsLoading,
+                    poseFactory.of(24,121, 0),
                     commonPoints.parkTowardsLoading)
                 .linear(commonPoints.startParkTowardsLoading, commonPoints.parkTowardsLoading);
     }
@@ -94,7 +97,8 @@ public class ParksLoadingSide extends OpMode {
     @Override
     public void start(){
         robot.startSequenceAuto();
-        autoSequence.execute();
+        buildPaths();
+        Scheduler.schedule(autoSequence);
     }
 
     @Override

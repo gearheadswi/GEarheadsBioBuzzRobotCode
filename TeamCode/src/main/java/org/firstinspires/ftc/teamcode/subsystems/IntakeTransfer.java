@@ -19,7 +19,7 @@ public class IntakeTransfer {
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0;
     private static final double FLOWER_RAMP_UP_LEFT = 0;
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
-
+    //commentmwahahahahahhameowmeowmeow6767676767
     private static final double FLAP_UP = 0.8;
     private static final double FLAP_DOWN = 0.425;
 

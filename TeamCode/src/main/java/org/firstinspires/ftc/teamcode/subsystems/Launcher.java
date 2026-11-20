@@ -24,7 +24,7 @@ public class Launcher {
         launchMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         launchMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        setPID(36, 14);
+        setPID(37, 14);
     }
 
     private void setMotorSpeed(double speed){
@@ -53,7 +53,10 @@ public class Launcher {
     }
 
     public void setTargetSpeed(double speed){
-        launchSpeed = speed;
+        if (launchSpeed != speed) {
+            launchSpeed = speed;
+            launchMotor1.setVelocity(launchSpeed);
+        }
     }
 
 //    public void setHoodAngle(double angle) {

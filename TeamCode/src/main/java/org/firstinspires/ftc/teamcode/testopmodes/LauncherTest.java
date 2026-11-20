@@ -22,12 +22,12 @@ public class LauncherTest extends LinearOpMode {
         launchMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         launchMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
-                36,0,0,14
+                37,0,0,14
         ));
 
         IntakeTransfer intake = new IntakeTransfer(hardwareMap);
 
-        double launcherSpeed = 1067.0;//Manav was here
+        double launcherSpeed = 1700.0;//Manav was here
         double hoodAngle = 0.5;
 
         waitForStart();
@@ -48,7 +48,7 @@ public class LauncherTest extends LinearOpMode {
                 hoodAngle -= 0.1;
             }
 
-            if (gamepad1.rightTriggerWasReleased()) {
+            if (gamepad1.rightTriggerWasPressed()) {
                 intake.reverseIntake();
             } else if (gamepad1.rightTriggerWasReleased()) {
                 intake.activateIntake();

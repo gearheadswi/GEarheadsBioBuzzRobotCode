@@ -20,7 +20,7 @@ public class LauncherPIDFTest extends LinearOpMode {
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double targetSpeed = 0;
-        double p = 36;
+        double p = 37;
         double f = 14;
 
         waitForStart();
