@@ -13,14 +13,14 @@ public class CommonPoints {
     public CommonPoints(PoseFactory poseFactory){
         // TODO
         startParkTowardsLoading = poseFactory.of(7.1, 130.375, 270);
-        startParkTowardsGarden = poseFactory.of(7.1, 83.625, 90);
+        startParkTowardsGarden = poseFactory.of(7.1, 83.625, 270);
 
         startGardenShoot = poseFactory.of(0, 0, 0);
         startLoadingShoot = poseFactory.of(0, 0, 0);
         // TODO
 
         parkTowardsLoading = poseFactory.of(11, 118.7, 270);
-        parkTowardsGarden = poseFactory.of(10.8, 95.4, 90);
+        parkTowardsGarden = poseFactory.of(10.8, 95.4, 270);
 
         flowerPickupLoading= poseFactory.of(46.8, 129.4, 90);
         flowerPickupGarden= poseFactory.of(13.7, 46.4, 180);

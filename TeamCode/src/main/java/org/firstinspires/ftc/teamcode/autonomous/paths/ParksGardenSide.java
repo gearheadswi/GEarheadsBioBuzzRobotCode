@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
-@Autonomous(name = "1a Park Loading Side")
+@Autonomous(name = "1a Park Garden Side")
 public class ParksGardenSide extends OpMode {
     private PoseFactory poseFactory = PoseFactory.degrees();
     private Follower follower;
@@ -51,8 +51,8 @@ public class ParksGardenSide extends OpMode {
         launcher = robot.launcher;
         brakes = robot.brakes;
 
-        buildSequence();
         buildPaths();
+        buildSequence();
         printSetTeam();
         Scheduler.reset();
     }
@@ -86,8 +86,8 @@ public class ParksGardenSide extends OpMode {
     }
 
     private void buildPaths(){
-        follower.setPose(commonPoints.startParkTowardsGarden);
         commonPoints = new CommonPoints(poseFactory);
+        follower.setPose(commonPoints.startParkTowardsGarden);
         toPark = curve(commonPoints.startParkTowardsGarden,
                     poseFactory.of(20,92, 0),
                     commonPoints.parkTowardsGarden)

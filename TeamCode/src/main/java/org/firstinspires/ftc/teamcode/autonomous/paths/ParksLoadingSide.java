@@ -51,8 +51,8 @@ public class ParksLoadingSide extends OpMode {
         launcher = robot.launcher;
         brakes = robot.brakes;
 
-        buildSequence();
         buildPaths();
+        buildSequence();
         printSetTeam();
         Scheduler.reset();
     }
@@ -86,8 +86,8 @@ public class ParksLoadingSide extends OpMode {
     }
 
     private void buildPaths(){
-        follower.setPose(commonPoints.startParkTowardsLoading);
         commonPoints = new CommonPoints(poseFactory);
+        follower.setPose(commonPoints.startParkTowardsLoading);
         toPark = curve(commonPoints.startParkTowardsLoading,
                     poseFactory.of(24,121, 0),
                     commonPoints.parkTowardsLoading)
@@ -97,7 +97,6 @@ public class ParksLoadingSide extends OpMode {
     @Override
     public void start(){
         robot.startSequenceAuto();
-        buildPaths();
         Scheduler.schedule(autoSequence);
     }
 
