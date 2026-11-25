@@ -1,0 +1,197 @@
+package org.firstinspires.ftc.teamcode.utils;
+
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Vector;
+import com.pedropathing.math.Velocity;
+
+public class AimingCalculator {
+    // Left and right are according to the standard Pedro field orientation. You can look at the field using the pedro pathing visualizer
+    public static final Pose BLUE_GARDEN  = new Pose(83.5, 89.33);
+    public static final Pose BLUE_LOADING = new Pose(83.5, 52.17);
+    public static final Pose RED_GARDEN = new Pose(58, 52.17);
+    public static final Pose RED_LOADING = new Pose(58, 89.33);
+
+    // X direction (- -> back, + -> front), Y direction (- -> left, + -> right)
+    public static final Pose TURRET_OFFSET = new Pose(-4.6063, 0);
+
+    public static final double FIELD_WIDTH = 141.5;
+
+    /**
+     * Y height of the center of the goal in the up position in Inches
+     */
+    public static final double UP_GOAL_HEIGHT = 59.55;
+
+    /**
+     * Height ball stops contacting robot in Inches
+     */
+    public static final double BALL_LEAVE_HEIGHT = 1; // TODO TUNE
+
+    public static final double GRAVITY = 32.2; // In/s^2
+
+    /**
+     * Represents how much further the ball would hit the ground given distance to goal
+     * Ex: If goal is 1 meter away, velocity and angle will target (1, goal height) and (1 * strength, 0)
+     * If this ends up not working very well, change to use setpoint
+     */
+    public static final double SHOT_STRENGTH = 2; // TODO TUNE?
+
+    public static class TheoreticalLaunchConfiguration {
+        private final double turretAngle;
+        private final double hoodAngle;
+        private final double launcherVelocity;
+        private final double distance;
+
+        public TheoreticalLaunchConfiguration(double turretAngle, double hoodAngle, double launcherVelocity, double distance) {
+            this.turretAngle = turretAngle;
+            this.hoodAngle = hoodAngle;
+            this.launcherVelocity = launcherVelocity;
+            this.distance = distance;
+        }
+
+        public double getLauncherVelocity() {
+            return launcherVelocity;
+        }
+
+        public double getHoodAngle() {
+            return hoodAngle;
+        }
+
+        /**
+         * Returns theoretical turret angle
+         * @return degrees -180 to 180
+         */
+        public double getTurretAngle() {
+            double normaAngle = (Math.toDegrees(turretAngle) + 3600) % 360;
+            if (normaAngle > 25) {
+                return normaAngle - 360;
+            }
+            return normaAngle;
+        }
+
+        public double getDistance() {
+            return distance;
+        }
+    }
+
+    public static Pose getTargetPose(TeamColor team, Pose robotPose){
+        boolean inTopHalf = robotPose.y() > FIELD_WIDTH / 2;
+        if (team == TeamColor.RED) {
+            return inTopHalf ? RED_LOADING : RED_GARDEN;
+        }
+        return inTopHalf ? BLUE_GARDEN : BLUE_LOADING;
+    }
+
+    public static Pose getTurretCenter(Pose robotPose){
+        Pose turretOffsetRotated = TURRET_OFFSET.toVector2D().rotate(robotPose.heading()).toPose();
+        return robotPose.plus(turretOffsetRotated);
+    }
+
+    public static double getTargetDistance(TeamColor team, Pose robotPose) {
+        Pose targetPose = getTargetPose(team, robotPose);
+        return targetPose.distance(getTurretCenter(robotPose));
+    }
+
+    /**
+     * Returns the offset from the heading of the robot that will aim towards the goal.
+     * @param robotPose Units: (Inches, Radians)
+     * @param target Position of target
+     * @return Angle offset from robot heading (Radians) normalized to 0 to 2PI
+     * positive -> Right of robot heading
+     * negative -> Left of robot heading
+     */
+    public static double getAimOffsetFromHeading(Pose robotPose, Pose target) {
+        double targetAngleFieldSpace = Math.atan2(
+                target.y() - robotPose.y(),
+                target.x() - robotPose.x()
+        );
+
+        double angleDif = targetAngleFieldSpace - robotPose.heading();
+        double angleNorm = (angleDif + Math.PI * 1000) % (Math.PI * 2);
+        return angleNorm;
+    }
+
+    /**
+     * Returns ideal aim angle given position
+     * Needs to be converted to servo position to actually use
+     * @param distance distance from target (inches)
+     * @return Aim angle (Radians)
+     */
+    public static double getHoodAngle(double distance){
+        return Math.atan(
+                (UP_GOAL_HEIGHT - BALL_LEAVE_HEIGHT) * SHOT_STRENGTH
+                        / ( distance * (SHOT_STRENGTH - 1) )
+        );
+    }
+
+    /**
+     * Returns ideal ball speed upon leaving launcher
+     * Need to actual turn into motor velocity to use
+     * @param aimAngle in Radians given by getHoodAngle
+     * @param distance distance from target (inches)
+     * @return Speed in In/s
+     */
+    public static double getTargetSpeed(double aimAngle, double distance){
+        return Math.sqrt( SHOT_STRENGTH * GRAVITY * distance / (Math.sin(aimAngle) * Math.cos(aimAngle) * 2) );
+    }
+
+    public static TheoreticalLaunchConfiguration aimAtTarget(TeamColor team, Pose robotPose) {
+        Pose target = getTargetPose(team, robotPose);
+        Pose turretCenter = getTurretCenter(robotPose);
+        double distance = getTargetDistance(team, turretCenter);
+
+        double hoodAngle = getHoodAngle(distance);
+        double velocity = getTargetSpeed(hoodAngle, distance);
+        double turretOffset = getAimOffsetFromHeading(turretCenter, target);
+
+        return new TheoreticalLaunchConfiguration(
+                turretOffset,
+                hoodAngle,
+                velocity,
+                distance
+        );
+    }
+
+    public static TheoreticalLaunchConfiguration aimAtTarget(TeamColor team, Pose robotPose, Velocity robotVelocity) {
+        Pose target = getTargetPose(team, robotPose);
+        Pose turretCenter = getTurretCenter(robotPose);
+        Vector displacement = new Vector (
+                target.x() - turretCenter.x(),
+                target.y() - turretCenter.y()
+        );
+        double distance = displacement.magnitude();
+
+        // + if going towards target, - for away
+        double robotRadialVelocity = robotVelocity.toVector().dot(displacement) / distance;
+        Vector perpindicularDisplacement = displacement.toVector2D().rotate(-Math.PI / 2).toVector(); // IDK if this uses radians because whoever made pedropathing is a idiot
+        // If looking at target, + if it goes right, - for left
+        double robotTangentialVelocity = robotVelocity.toVector().dot(perpindicularDisplacement) / distance;
+
+        // Angle and velocity not compensating
+        double basicHoodAngle = getHoodAngle(distance);
+        double basicVelocity = getTargetSpeed(basicHoodAngle, distance);
+
+        double targetVX = basicVelocity * Math.cos(basicHoodAngle) - robotRadialVelocity;
+        double targetVY = robotTangentialVelocity;
+        double targetVZ = basicVelocity * Math.sin(basicHoodAngle); // Vertical
+
+        double targetVFlat = Math.sqrt( targetVX * targetVX + targetVY * targetVY );
+
+        // Angle and velocity compensating
+        double compensatedAngle = Math.atan2( targetVZ, targetVFlat );
+        double compensatedVel = Math.sqrt(
+                targetVX * targetVX +
+                targetVY * targetVY +
+                targetVZ * targetVZ
+        );
+
+        double additionalTurretOffset = Math.atan2(targetVY, targetVX);
+        double compensatedTurretOffset = getAimOffsetFromHeading(robotPose, target) - additionalTurretOffset;
+
+        return new TheoreticalLaunchConfiguration(
+                compensatedTurretOffset,
+                compensatedAngle,
+                compensatedVel,
+                distance
+        );
+    }
+}
