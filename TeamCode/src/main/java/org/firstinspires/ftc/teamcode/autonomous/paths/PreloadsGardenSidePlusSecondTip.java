@@ -26,12 +26,14 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
-@Autonomous(name = "3 Preloads Garden Side + Second Tip")
+@Autonomous(name = "3) Preloads Garden Side + Second Tip")
 public class PreloadsGardenSidePlusSecondTip extends OpMode {
     private PoseFactory poseFactory = PoseFactory.degrees();
     private Follower follower;
     private TeamColor team = TeamColor.RED;
     private CommonPoints commonPoints = new CommonPoints(poseFactory);
+
+    private long prevTimeStamp = 0;
 
     private Robot robot;
     private IntakeTransfer intakeTransfer;
@@ -58,8 +60,8 @@ public class PreloadsGardenSidePlusSecondTip extends OpMode {
         launcher = robot.launcher;
         brakes = robot.brakes;
 
-        buildSequence();
         buildPaths();
+        buildSequence();
         printSetTeam();
         Scheduler.reset();
     }
@@ -136,10 +138,19 @@ public class PreloadsGardenSidePlusSecondTip extends OpMode {
     public void start(){
         robot.startSequenceAuto();
         Scheduler.schedule(autoSequence);
+        launcher.setTargetSpeed(1620);
+        turret.setTurretAimOffset(-270);
     }
 
     @Override
     public void loop() {
+        double dt = (System.currentTimeMillis() - prevTimeStamp) / 1000.0;
+        prevTimeStamp = System.currentTimeMillis();
+
+        intakeTransfer.updateCurrentLimiting();
+        intakeTransfer.updateBallCount();
+        turret.updateMovement(dt, follower.pose().heading(), 0);
+
         follower.update();
         Scheduler.execute();
     }

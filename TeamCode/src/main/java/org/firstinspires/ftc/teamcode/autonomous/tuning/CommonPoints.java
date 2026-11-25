@@ -11,13 +11,11 @@ import org.firstinspires.ftc.teamcode.utils.TeamColor;
  */
 public class CommonPoints {
     public CommonPoints(PoseFactory poseFactory){
-        // TODO
         startParkTowardsLoading = poseFactory.of(7.1, 130.375, 270);
         startParkTowardsGarden = poseFactory.of(7.1, 83.625, 270);
 
-        startGardenShoot = poseFactory.of(0, 0, 0);
-        startLoadingShoot = poseFactory.of(0, 0, 0);
-        // TODO
+        startGardenShoot = poseFactory.of(54.8, 7.6, 180);
+        startLoadingShoot = poseFactory.of(60, 134.2, 0);
 
         parkTowardsLoading = poseFactory.of(11, 118.7, 270);
         parkTowardsGarden = poseFactory.of(10.8, 95.4, 270);

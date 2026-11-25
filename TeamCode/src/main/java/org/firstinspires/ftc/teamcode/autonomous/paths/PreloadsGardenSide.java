@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode.autonomous.paths;
 
+import static com.pedropathing.api.Paths.curve;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import static com.pedropathing.api.Paths.*;
-import com.pedropathing.paths.Path;
-
-import static com.pedropathing.ivy.groups.Groups.*;
-import static com.pedropathing.ivy.pedro.PedroCommands.*;
 
 import org.firstinspires.ftc.teamcode.ValueStorage;
 import org.firstinspires.ftc.teamcode.autonomous.tuning.CommonPoints;
@@ -21,13 +21,17 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
+import static com.pedropathing.ivy.commands.Commands.*;
+import static com.pedropathing.ivy.groups.Groups.*;
 
-@Autonomous(name = "2 Preloads Garden Side")
+@Autonomous(name = "2) Preloads Garden Side")
 public class PreloadsGardenSide extends OpMode {
     private PoseFactory poseFactory = PoseFactory.degrees();
     private Follower follower;
     private TeamColor team = TeamColor.RED;
     private CommonPoints commonPoints = new CommonPoints(poseFactory);
+
+    private long prevTimeStamp = 0;
 
     private Robot robot;
     private IntakeTransfer intakeTransfer;
@@ -51,8 +55,8 @@ public class PreloadsGardenSide extends OpMode {
         launcher = robot.launcher;
         brakes = robot.brakes;
 
-        buildSequence();
         buildPaths();
+        buildSequence();
         printSetTeam();
         Scheduler.reset();
     }
@@ -81,16 +85,18 @@ public class PreloadsGardenSide extends OpMode {
 
     private void buildSequence(){
         autoSequence = sequential(
-                intakeTransfer.shootCommand,
+                waitMs(2000),
+                intakeTransfer.fullAssistedShot,
+                waitMs(2000),
                 follow(follower, toPark)
         );
     }
 
     private void buildPaths(){
-        follower.setPose(commonPoints.startGardenShoot);
         commonPoints = new CommonPoints(poseFactory);
+        follower.setPose(commonPoints.startGardenShoot);
         toPark = curve(commonPoints.startGardenShoot,
-                    poseFactory.of(19, 30, 0),
+                    poseFactory.of(20.5,32, 0),
                     commonPoints.parkTowardsGarden)
                 .linear(commonPoints.startGardenShoot, commonPoints.parkTowardsGarden);
     }
@@ -99,10 +105,19 @@ public class PreloadsGardenSide extends OpMode {
     public void start(){
         robot.startSequenceAuto();
         Scheduler.schedule(autoSequence);
+        launcher.setTargetSpeed(1620);
+        turret.setTurretAimOffset(-90);
     }
 
     @Override
     public void loop() {
+        double dt = (System.currentTimeMillis() - prevTimeStamp) / 1000.0;
+        prevTimeStamp = System.currentTimeMillis();
+
+        intakeTransfer.updateCurrentLimiting();
+        intakeTransfer.updateBallCount();
+        turret.updateMovement(dt, follower.pose().heading(), 0);
+
         follower.update();
         Scheduler.execute();
     }

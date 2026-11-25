@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
-@Autonomous(name = "1b Park Loading Side")
+@Autonomous(name = "1b) Park Loading Side")
 public class ParksLoadingSide extends OpMode {
     private PoseFactory poseFactory = PoseFactory.degrees();
     private Follower follower;

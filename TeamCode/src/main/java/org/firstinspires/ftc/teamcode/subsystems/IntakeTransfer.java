@@ -15,11 +15,12 @@ import static com.pedropathing.ivy.groups.Groups.*;
 public class IntakeTransfer {
     private static final double BLOCKER_CLOSED_POSITION = 0.37;
     private static final double BLOCKER_OPEN_POSITION = 0.6;
+
     private static final double FLOWER_RAMP_DOWN_LEFT = 0.975;
     private static final double FLOWER_RAMP_DOWN_RIGHT = 0;
     private static final double FLOWER_RAMP_UP_LEFT = 0;
     private static final double FLOWER_RAMP_UP_RIGHT = 0.925;
-    //commentmwahahahahahhameowmeowmeow6767676767
+
     private static final double FLAP_UP = 0.8;
     private static final double FLAP_DOWN = 0.425;
 
@@ -109,18 +110,8 @@ public class IntakeTransfer {
                 targetCurrent = shooting ? MAX_CURRENT_SHOOTING : MAX_CURRENT;
             }
         }
-        intakeCurrentLimiter.controlCurrent(Math.signum(targetCurrent) * 6);
+        intakeCurrentLimiter.controlCurrent(Math.signum(targetCurrent) * 6); // TODO change when good robot
         transferCurrentLimiter.controlCurrent(Math.signum(targetCurrent) * 6);
-//        if (targetCurrent > 0) {
-//            transferMotor.setPower(1);
-//            intakeMotor.setPower(1);
-//        } else if (targetCurrent < 0) {
-//            transferMotor.setPower(-1);
-//            intakeMotor.setPower(-1);
-//        } else {
-//            transferMotor.setPower(0);
-//            intakeMotor.setPower(0);
-//        }
     }
 
     /**

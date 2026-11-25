@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Launcher;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 import org.firstinspires.ftc.teamcode.utils.TeamColor;
 
-@Autonomous(name = "4 Preloads Garden Side + Second Tip + Extra")
+@Autonomous(name = "4) Preloads Garden Side + Second Tip + Extra")
 public class PreloadsGardenSidePlusSecondTipPlusExtra extends OpMode {
     private PoseFactory poseFactory = PoseFactory.degrees();
     private Follower follower;

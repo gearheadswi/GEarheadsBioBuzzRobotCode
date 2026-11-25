@@ -49,7 +49,7 @@ public class Teleop extends OpMode {
     private static final TheoreticalLaunchConfiguration DEFAULT_LAUNCH_CONFIG = new TheoreticalLaunchConfiguration(
             -Math.PI / 2,
             0,
-            1710,
+            1620,
             0
     );
     private Robot robot;
@@ -218,7 +218,7 @@ public class Teleop extends OpMode {
         }
 
         // RELOCALIZATION POINTS
-        if (gamepad2.dpadUpWasPressed()){
+        if (gamepad2.dpadUpWasPressed() || gamepad2.xWasPressed()){
             Pose newPos = (team == TeamColor.RED) ? RELOCALIZE_RED_POSE_1 : RELOCALIZE_BLUE_POSE_1;
             follower.setPose(newPos);
         }
@@ -234,22 +234,6 @@ public class Teleop extends OpMode {
             Pose newPos = (team == TeamColor.RED) ? RELOCALIZE_RED_POSE_4 : RELOCALIZE_BLUE_POSE_4;
             follower.setPose(newPos);
         }
-
-//        if (gamepad1.dpadUpWasPressed()){
-//            TurretPIDF.p += 0.001;
-//        }
-//        if (gamepad1.dpadDownWasPressed()){
-//            TurretPIDF.p -= 0.001;
-//        }
-//        if (gamepad1.dpadRightWasPressed()){
-//            TurretPIDF.d += 0.0001;
-//        }
-//        if (gamepad1.dpadLeftWasPressed()){
-//            TurretPIDF.d -= 0.0001;
-//        }
-//
-//        telemetry.addData("kP (Down Up)", TurretPIDF.p);
-//        telemetry.addData("kD (Left Right)", TurretPIDF.d);
 
         // Update stuff
         turret.updateMovement(dt, Math.toDegrees(robotPose.heading()), Math.toDegrees(robotVelocity.omega));
